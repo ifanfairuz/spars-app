@@ -1,4 +1,5 @@
 import { extendTheme } from "native-base";
+import LinearGradient from "react-native-linear-gradient";
 
 function generateShadow(name: string, color: string) {
   return {
@@ -105,18 +106,19 @@ function generateShadow(name: string, color: string) {
   }
 }
 
-const theme = extendTheme({
+export const theme = extendTheme({
   colors: {
     spars: {
       red: '#EB5757',
       yellow: '#F2C94C',
       blue: '#00ADFA',
+      bluelight: 'rgba(0, 173, 250, 0.1)',
       orange: '#F2994A',
       green: '#5ED1A9',
       green2: '#27AE60',
       grey: '#9E9E9E',
       lightgrey: '#FAFAFA',
-      darkgrey: '#E0E0E0',
+      darkgrey: '#E0E0E0'
     }
   },
   shadows: {
@@ -183,8 +185,27 @@ const theme = extendTheme({
           fontWeight: '700'
         }
       })
+    },
+    Input: {
+      baseStyle: props => ({
+        borderRadius: '8'
+      })
     }
   }
 });
 
-export default theme;
+export const config = {
+  dependencies: {
+    'linear-gradient': LinearGradient,
+  }
+}
+
+export const gradient = {
+  blue: {
+    linearGradient: {
+      colors: ['#57CBFF', '#00ADFA'],
+      start: [0.25, 0.5],
+      end: [0.75, 0.5],
+    }
+  }
+}

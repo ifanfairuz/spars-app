@@ -3,7 +3,10 @@ import navigation from "./navigation";
 
 const app = {
   server: server,
-  navigation: navigation
+  navigation: navigation,
+  storage: {
+    key: '@spars-store'
+  }
 } as const;
 
 export type Config = typeof app;

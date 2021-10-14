@@ -22,6 +22,7 @@
       "@screens": ["./src/screens/"],
       "@support": ["./src/support/"],
       "@store": ["./src/store/"],
+      "@context": ["./src/context/"],
 
       "@actions/*": ["./src/actions/*"],
       "@assets/*": ["./src/assets/*"],
@@ -29,7 +30,8 @@
       "@config/*": ["./src/config/*"],
       "@screens/*": ["./src/screens/*"],
       "@support/*": ["./src/support/*"],
-      "@store/*": ["./src/store/*"]
+      "@store/*": ["./src/store/*"],
+      "@context/*": ["./src/context/*"]
     }
   },
   "include": [

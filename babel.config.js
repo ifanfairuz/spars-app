@@ -19,6 +19,7 @@ module.exports = {
         "@screens": "./src/screens",
         "@support": "./src/support",
         "@store": "./src/store",
+        "@context": "./src/context",
       }
     }],
     ["module:react-native-dotenv", {

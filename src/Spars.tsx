@@ -1,13 +1,16 @@
 import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { NativeBaseProvider } from 'native-base';
-import theme from '@config/theme';
-import { Login } from '@screens';
+import { theme, config } from '@config/native-base';
+import MainScreen from '@screens';
 
 const Spars: React.FC = () => {
   return (
-    <NativeBaseProvider theme={theme}>
-      <Login />
-    </NativeBaseProvider>
+    <NavigationContainer>
+      <NativeBaseProvider theme={theme} config={config}>
+        <MainScreen />
+      </NativeBaseProvider>
+    </NavigationContainer>
   );
 }
 
