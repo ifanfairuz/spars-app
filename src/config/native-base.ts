@@ -102,7 +102,17 @@ function generateShadow(name: string, color: string) {
       shadowOpacity: 0.34,
       shadowRadius: 6.27,
       elevation: 10,
-    }
+    },
+    [`10.${name}`]: {
+      shadowColor: color,
+      shadowOffset: {
+        width: 0,
+        height: 12,
+      },
+      shadowOpacity: 0.58,
+      shadowRadius: 16.00,
+      elevation: 24,
+    },
   }
 }
 
@@ -112,6 +122,7 @@ export const theme = extendTheme({
       red: '#EB5757',
       yellow: '#F2C94C',
       blue: '#00ADFA',
+      darkblue: '#57CBFF',
       bluelight: 'rgba(0, 173, 250, 0.1)',
       orange: '#F2994A',
       green: '#5ED1A9',
@@ -122,9 +133,11 @@ export const theme = extendTheme({
     }
   },
   shadows: {
+    ...generateShadow('black', '#000'),
     ...generateShadow('red', '#EB5757'),
     ...generateShadow('yellow', '#F2C94C'),
     ...generateShadow('blue', '#00ADFA'),
+    ...generateShadow('darkblue', '#57CBFF'),
     ...generateShadow('orange', '#F2994A'),
     ...generateShadow('green', '#5ED1A9'),
     ...generateShadow('green2', '#27AE60'),
@@ -188,8 +201,50 @@ export const theme = extendTheme({
     },
     Input: {
       baseStyle: props => ({
-        borderRadius: '8'
-      })
+        borderRadius: '8',
+        bg: 'spars.lightgrey',
+        p: '3',
+        color: 'black',
+        fontSize: '14',
+        fontWeight: '700',
+      }),
+    },
+    Select: {
+      baseStyle: {
+        customDropdownIconProps: {
+          size: '7',
+          mr: '3',
+          p: '0',
+          color: 'grey'
+        },
+        color: 'black',
+        fontSize: '14',
+        borderWidth: '1',
+        borderColor: 'spars.darkgrey',
+        borderRadius: '8',
+        fontWeight: '700'
+      },
+      defaultProps: {
+        bg: 'spars.lightgrey',
+        p: '3',
+      },
+    },
+    TextArea: {
+      baseStyle: {
+        p: '3',
+        borderRadius: '8',
+        bg: 'spars.lightgrey',
+        fontSize: '14',
+        fontWeight: '700',
+        color: 'black'
+      }
+    },
+    Image: {
+      defaultProps: {
+        fallbackSource: require('@assets/images/placeholder.png'),
+        loadingIndicatorSource: require('@assets/images/placeholder.png'),
+        // defaultSource: require('@assets/images/placeholder.png')
+      }
     }
   }
 });
