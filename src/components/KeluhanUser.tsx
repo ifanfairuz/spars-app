@@ -3,11 +3,11 @@ import { HStack, Pressable, Text, VStack } from 'native-base';
 import Label from './Label';
 import { IVStackProps } from 'native-base/lib/typescript/components/primitives/Stack/VStack';
 
-export interface KeluhanProps extends IVStackProps {
+export interface KeluhanUserProps extends IVStackProps {
   onPress?: () => void
 }
 
-const Keluhan: FC<KeluhanProps> = ({ onPress, ...props }) => {
+const KeluhanUser: FC<KeluhanUserProps> = ({ onPress, ...props }) => {
   return (
     <Pressable onPress={onPress}>
       <VStack
@@ -38,4 +38,4 @@ const Keluhan: FC<KeluhanProps> = ({ onPress, ...props }) => {
   );
 }
 
-export default Keluhan;
+export default KeluhanUser;

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { VStack, Input, SearchIcon, Text, Box, FlatList, Pressable } from 'native-base';
 import { ListRenderItem } from 'react-native';
-import { GlassBg, Keluhan, ButtonScan } from '@components';
+import { GlassBg, KeluhanUser, ButtonScan } from '@components';
 import { UserScreenProps } from '.';
 
 export type ListKeluhanProps = UserScreenProps<'ListKeluhan'>;
@@ -14,13 +14,13 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
   const renderKeluhan: ListRenderItem<number> = (item) => {
     return (
       <Box px='8' pb='3' bg='white'>
-        <Keluhan onPress={goToDetailKeluhan} />
+        <KeluhanUser onPress={goToDetailKeluhan} />
       </Box>
     );
   }
 
   return (
-    <Box flex={1}>      
+    <Box flex={1} bg='white'>
       <FlatList
         data={[0,1,2,3,4,5,6,7,8,9]}
         renderItem={renderKeluhan}
@@ -30,7 +30,7 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
           borderTopEndRadius: 20,
         }}
         ListHeaderComponent={() =>
-          <VStack bg='spars.green2'>
+          <VStack bg='spars.green'>
             <GlassBg />
             <Box p='5'>
               <Input

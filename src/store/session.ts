@@ -14,6 +14,14 @@ export async function store_session(data: any) {
   }
 }
 
+export async function delete_session() {
+  try {
+    await AsyncStorage.setItem(KEY, '{}');
+  } catch (e) {
+    
+  }
+}
+
 export async function get_session(key: string = '') {
   try {
     const value = await AsyncStorage.getItem(KEY)

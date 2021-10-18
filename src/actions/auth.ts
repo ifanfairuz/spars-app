@@ -1,4 +1,4 @@
-import { get_session, store_session } from "@store/session";
+import { delete_session, get_session, store_session } from "@store/session";
 
 export async function login(username: string, password: string) {
   const data = {
@@ -12,7 +12,7 @@ export async function login(username: string, password: string) {
 }
 
 export async function logout() {
-  await store_session({});
+  await delete_session();
   return true;
 }
 

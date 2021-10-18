@@ -7,6 +7,7 @@ import authReducer from '@store/auth';
 import Login from "./Login";
 import SplashScreen from "./SplashScreen";
 import UserScreen from "./user";
+import KatimScreen from './katim';
 
 const MainNavigation = createNativeStackNavigator();
 
@@ -63,7 +64,7 @@ const MainScreen: FC = () => {
         case 'teknisi':
           return <MainNavigation.Screen name='Main' component={UserScreen} />;
         case 'katim':
-          return <MainNavigation.Screen name='Main' component={UserScreen} />;
+          return <MainNavigation.Screen name='Main' component={KatimScreen} />;
       }
     }
     return <MainNavigation.Screen name='Login' component={Login} />

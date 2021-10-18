@@ -22,8 +22,8 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation }) => {
 }
 
   return (
-    <VStack flex={1} bg='spars.green2'>
-      <GlassBg />
+    <VStack flex={1} bg='spars.green'>
+      <GlassBg h='20%' />
       <ScrollView
         nestedScrollEnabled={true}
         contentContainerStyle={{

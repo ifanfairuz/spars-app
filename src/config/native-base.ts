@@ -119,6 +119,7 @@ function generateShadow(name: string, color: string) {
 export const theme = extendTheme({
   colors: {
     spars: {
+      whitelight: 'rgba(255, 255, 255, 0.4)',
       red: '#EB5757',
       yellow: '#F2C94C',
       blue: '#00ADFA',
@@ -129,7 +130,8 @@ export const theme = extendTheme({
       green2: '#27AE60',
       grey: '#9E9E9E',
       lightgrey: '#FAFAFA',
-      darkgrey: '#E0E0E0'
+      darkgrey: '#E0E0E0',
+      lightergrey: '#F1F1F1'
     }
   },
   shadows: {
@@ -202,7 +204,7 @@ export const theme = extendTheme({
     Input: {
       baseStyle: props => ({
         borderRadius: '8',
-        bg: 'spars.lightgrey',
+        bg: props.variant == 'unstyled' ? 'transparent' : 'spars.lightgrey',
         p: '3',
         color: 'black',
         fontSize: '14',
@@ -222,7 +224,7 @@ export const theme = extendTheme({
         borderWidth: '1',
         borderColor: 'spars.darkgrey',
         borderRadius: '8',
-        fontWeight: '700'
+        fontWeight: '700'  
       },
       defaultProps: {
         bg: 'spars.lightgrey',
@@ -259,8 +261,22 @@ export const gradient = {
   blue: {
     linearGradient: {
       colors: ['#57CBFF', '#00ADFA'],
-      start: [0.25, 0.5],
-      end: [0.75, 0.5],
+      start: [0.10, 0.5],
+      end: [0.90, 0.5],
+    }
+  },
+  orange: {
+    linearGradient: {
+      colors: ['#FFB97B', '#F2994A'],
+      start: [0.10, 0.5],
+      end: [0.90, 0.5],
+    }
+  },
+  black: {
+    linearGradient: {
+      colors: ['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.8)'],
+      start: [0.5, 0],
+      end: [0.5, 1],
     }
   }
 }

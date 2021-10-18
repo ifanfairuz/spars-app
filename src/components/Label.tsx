@@ -4,8 +4,8 @@ import { gradient } from '@config/native-base';
 
 const Label: FC<IBoxProps> = ({ children, ...props }) => {
   return (
-    <Box {...props} px='5' py='1' borderRadius='100' bg={gradient.blue}>
-      <Text fontWeight='700' color='white'>{children}</Text>
+    <Box px='5' py='1' borderRadius='100' bg={gradient.blue} {...props}>
+      <Text fontWeight='700' color='white' {...props._text}>{children}</Text>
     </Box>
   );
 }
