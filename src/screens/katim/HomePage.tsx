@@ -10,6 +10,7 @@ export type HomePageProps = KatimScreenProps<'HomePage'>;
 const HomePage: FC<HomePageProps> = ({ navigation }) => {
   const [head_height, setHeadHeight] = useState(0);
   const goToTerima = () => navigation.navigate('PilihTeknisi');
+  const goToTambahJadwal = () => navigation.navigate('TambahPenjadwalan');
 
   const renderKeluhan: ListRenderItem<number> = () => {
     return (
@@ -100,8 +101,8 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
         <VStack pt='8' pb='2' bg='white' borderTopRadius='20' minH={Dimensions.get('window').height - head_height}>
           <VStack px='5' mb='2' space='xs'>
             <HStack justifyContent='space-between'>
-              <Text bold fontSize='lg'>Pemeliharaan</Text>
-              <Pressable>
+              <Text bold fontSize='md'>Pemeliharaan</Text>
+              <Pressable onPress={goToTambahJadwal}>
                 <Text>Buat Jadwal</Text>
               </Pressable>
             </HStack>
@@ -117,7 +118,7 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
 
           <VStack>
             <HStack px='5' justifyContent='space-between'>
-              <Text bold fontSize='lg'>Keluhan Baru</Text>
+              <Text bold fontSize='md'>Keluhan Baru</Text>
               <Pressable>
                 <ArrowForwardIcon size='sm' color='spars.red' />
               </Pressable>
