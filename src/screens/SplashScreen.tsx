@@ -10,24 +10,24 @@ const SplashScreen: FC = () => {
         <Logo />
       </Center>
       <Box
-        position={'absolute'}
-        width={'100%'}
-        alignItems={'center'}
-        justifyContent={'flex-end'}
+        position='absolute'
+        width='100%'
+        alignItems='center'
+        justifyContent='flex-end'
         bottom={0}
-        height={'30%'}
+        height='30%'
         minHeight={200}>
         <Image
           source={loading}
-          position={'absolute'}
-          width={'100%'}
-          height={'100%'}
+          position='absolute'
+          width='100%'
+          height='100%'
           resizeMode='stretch'
           alt='bg-splash' />
         <Text
-          color={'white'}
+          color='white'
           marginBottom={12}
-          fontSize={'md'}>
+          fontSize='md'>
           POWERED BY GREATCODE
         </Text>
       </Box>
