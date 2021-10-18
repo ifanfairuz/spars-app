@@ -4,7 +4,7 @@ import DateTimePicker, { AndroidEvent } from '@react-native-community/datetimepi
 import { GlassBg, CalendarIcon } from '@components';
 import { KatimScreenProps } from '.';
 import { Dimensions } from 'react-native';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 
 
 export type TambahPenjadwalanProps = KatimScreenProps<'TambahPenjadwalan'>;
@@ -12,8 +12,8 @@ export type TambahPenjadwalanProps = KatimScreenProps<'TambahPenjadwalan'>;
 const TambahPenjadwalan: FC<TambahPenjadwalanProps> = ({ navigation }) => {
   const [head_height, setHeadHeight] = useState(0);
   const [interval, setInterval] = useState('manual');
-  const [start_date, setStartDate] = useState(moment());
-  const [end_date, setEndDate] = useState(moment());
+  const [start_date, setStartDate] = useState<Moment|undefined>();
+  const [end_date, setEndDate] = useState<Moment|undefined>();
   const [show_datepicker_start, setShowDatepickerStart] = useState(false);
   const [show_datepicker_end, setShowDatepickerEnd] = useState(false);
   const goBack = () => navigation.canGoBack() && navigation.goBack();
@@ -91,7 +91,7 @@ const TambahPenjadwalan: FC<TambahPenjadwalanProps> = ({ navigation }) => {
                 flex='1'
                 onPress={() => setShowDatepickerStart(true)}>
                 <Input
-                  value={start_date?.format('YYYY-MM-DD')}
+                  value={start_date?.format('DD/MM/YYYY')}
                   placeholder='Dari'
                   InputRightElement={<CalendarIcon size='sm' mr='3' />}
                   isReadOnly />
@@ -100,7 +100,7 @@ const TambahPenjadwalan: FC<TambahPenjadwalanProps> = ({ navigation }) => {
                 flex='1'
                 onPress={() => setShowDatepickerEnd(true)}>
                 <Input
-                  value={end_date?.format('YYYY-MM-DD')}
+                  value={end_date?.format('DD/MM/YYYY')}
                   placeholder='Sampai'
                   InputRightElement={<CalendarIcon size='sm' mr='3' />}
                   isReadOnly />
@@ -112,7 +112,7 @@ const TambahPenjadwalan: FC<TambahPenjadwalanProps> = ({ navigation }) => {
                 mode='date'
                 is24Hour={true}
                 display="default"
-                value={start_date.toDate()}
+                value={start_date?.toDate() || new Date()}
                 onChange={(e: AndroidEvent, date?: Date) => {
                   setShowDatepickerStart(false);
                   setStartDate(moment(date));
@@ -124,7 +124,7 @@ const TambahPenjadwalan: FC<TambahPenjadwalanProps> = ({ navigation }) => {
                 mode='date'
                 is24Hour={true}
                 display="default"
-                value={end_date.toDate()}
+                value={end_date?.toDate() || new Date()}
                 onChange={(e: AndroidEvent, date?: Date) => {
                   setShowDatepickerEnd(false);
                   setEndDate(moment(date));
