@@ -8,6 +8,8 @@ export type DataTugasProps = TeknisiScreenProps<'DataTugas'>;
 
 const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
   const [riwayatOpen, setRiwayatOpen] = useState(false);
+  const goToFormPemeliharaan = () => navigation.navigate('FormPemeliharaan');
+  const goToFormKeluhan = () => navigation.navigate('DetailKeluhan');
 
   const renderReport: ListRenderItem<number> = ({ index }) => {
     const isPreventif = index % 2 == 0;
@@ -28,7 +30,14 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
             { isPreventif ? 'Preventif' : 'Korektif' }
           </Center>
         </HStack>
-        { isPreventif ? <ReportCardTeknisiPreventif mb='5' /> : <ReportCardTeknisiKorektif /> }
+        { isPreventif ? (
+          <ReportCardTeknisiPreventif
+            mb='5'
+            onPemeliharaan={goToFormPemeliharaan}
+            onRiwayat={() => setRiwayatOpen(true)} />
+        ) : (
+          <ReportCardTeknisiKorektif onPress={goToFormKeluhan} />
+        ) }
         { !isPreventif && (
           <HStack justifyContent='space-between'>
             <Text bold color='spars.green'>SELESAI</Text>

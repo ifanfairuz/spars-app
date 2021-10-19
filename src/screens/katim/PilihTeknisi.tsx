@@ -9,6 +9,11 @@ export type PilihTeknisiProps = KatimScreenProps<'PilihTeknisi'>;
 const PilihTeknisi: FC<PilihTeknisiProps> = ({ navigation }) => {
   const [head_height, setHeadHeight] = useState(0);
   const goBack = () => navigation.canGoBack() && navigation.goBack();
+  const goToMain = () => navigation.replace('DetailReport');
+
+  const submit = () => {
+    goToMain();
+  }
   
   return (
     <VStack flex={1} bg='spars.green' position='relative'>
@@ -41,7 +46,8 @@ const PilihTeknisi: FC<PilihTeknisiProps> = ({ navigation }) => {
             p='4'
             bg='spars.orange'
             _text={{ color: 'white' }} shadow='9.orange'
-            _pressed={{ bg: 'spars.orange', opacity: 0.8 }}>
+            _pressed={{ bg: 'spars.orange', opacity: 0.8 }}
+            onPress={submit}>
               Pilih Teknisi
           </Button>
         </VStack>

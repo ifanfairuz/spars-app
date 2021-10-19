@@ -11,6 +11,7 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
   const [head_height, setHeadHeight] = useState(0);
   const goToTerima = () => navigation.navigate('PilihTeknisi');
   const goToTambahJadwal = () => navigation.navigate('TambahPenjadwalan');
+  const goToReport = () => navigation.navigate('DetailReport');
 
   const renderKeluhan: ListRenderItem<number> = () => {
     return (
@@ -59,41 +60,45 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
           </HStack>
           <VStack py='5' bg='white' borderRadius='8'>
             
-            <HStack px='5' space='md'>
-              <VStack flex='1' space='xs'>
-                <HStack justifyContent='space-between'>
-                  <Text fontSize='md'>Pemeliharaan</Text>
-                  <Text fontSize='sm' color='spars.grey' bold>16</Text>
-                </HStack>
-                <Box bg='spars.darkgrey' h='1' borderRadius='4'>
-                  <Box position='absolute' borderRadius='4' h='1' w='90%' bg='spars.orange' />
-                </Box>
-                <Text fontSize='sm' color='spars.green2' bold>12 Selesai</Text>
-              </VStack>
-              <Stack justifyContent='center'>
-                <Box w='50' h='50' bg={gradient.orange} borderRadius='8' justifyContent='center' alignItems='center'>
-                  <Text fontSize='sm' bold color='white'>90%</Text>
-                </Box>
-              </Stack>
-            </HStack>
+            <Pressable onPress={goToReport}>
+              <HStack px='5' space='md'>
+                <VStack flex='1' space='xs'>
+                  <HStack justifyContent='space-between'>
+                    <Text fontSize='md'>Pemeliharaan</Text>
+                    <Text fontSize='sm' color='spars.grey' bold>16</Text>
+                  </HStack>
+                  <Box bg='spars.darkgrey' h='1' borderRadius='4'>
+                    <Box position='absolute' borderRadius='4' h='1' w='90%' bg='spars.orange' />
+                  </Box>
+                  <Text fontSize='sm' color='spars.green2' bold>12 Selesai</Text>
+                </VStack>
+                <Stack justifyContent='center'>
+                  <Box w='50' h='50' bg={gradient.orange} borderRadius='8' justifyContent='center' alignItems='center'>
+                    <Text fontSize='sm' bold color='white'>90%</Text>
+                  </Box>
+                </Stack>
+              </HStack>
+            </Pressable>
             <Box my='4' w='100%' borderWidth='1' borderColor='spars.darkgrey' borderStyle='dashed' />
-            <HStack px='5' space='md'>
-              <VStack flex='1' space='xs'>
-                <HStack justifyContent='space-between'>
-                  <Text fontSize='md'>Keluhan</Text>
-                  <Text fontSize='sm' color='spars.grey' bold>16</Text>
-                </HStack>
-                <Box bg='spars.darkgrey' h='1' borderRadius='4'>
-                  <Box position='absolute' borderRadius='4' h='1' w='90%' bg='spars.blue' />
-                </Box>
-                <Text fontSize='sm' color='spars.green2' bold>12 Selesai</Text>
-              </VStack>
-              <Stack justifyContent='center'>
-                <Box w='50' h='50' bg={gradient.blue} borderRadius='8' justifyContent='center' alignItems='center'>
-                  <Text fontSize='sm' bold color='white'>90%</Text>
-                </Box>
-              </Stack>
-            </HStack>
+            <Pressable onPress={goToReport}>
+              <HStack px='5' space='md'>
+                <VStack flex='1' space='xs'>
+                  <HStack justifyContent='space-between'>
+                    <Text fontSize='md'>Keluhan</Text>
+                    <Text fontSize='sm' color='spars.grey' bold>16</Text>
+                  </HStack>
+                  <Box bg='spars.darkgrey' h='1' borderRadius='4'>
+                    <Box position='absolute' borderRadius='4' h='1' w='90%' bg='spars.blue' />
+                  </Box>
+                  <Text fontSize='sm' color='spars.green2' bold>12 Selesai</Text>
+                </VStack>
+                <Stack justifyContent='center'>
+                  <Box w='50' h='50' bg={gradient.blue} borderRadius='8' justifyContent='center' alignItems='center'>
+                    <Text fontSize='sm' bold color='white'>90%</Text>
+                  </Box>
+                </Stack>
+              </HStack>
+            </Pressable>
 
           </VStack>
         </VStack>
@@ -108,7 +113,7 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
             </HStack>
             <HStack borderWidth='1' borderColor='spars.lightergrey' pl='4' pr='2' py='2' justifyContent='space-between' alignItems='center' my='2'>
               <Text>Terjadwal 20 Pemeliharaan</Text>
-              <Pressable>
+              <Pressable onPress={goToReport}>
                 <Box py='2' px='4' bg={gradient.blue} borderRadius='5'>
                   <Text bold color='white' fontSize='xs'>VIEW</Text>
                 </Box>

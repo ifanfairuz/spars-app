@@ -46,6 +46,12 @@ export type FormPemeliharaanProps = TeknisiScreenProps<'FormPemeliharaan'>;
 
 const FormPemeliharaan: FC<FormPemeliharaanProps> = ({ navigation }) => {
   const [pelaksana, SetPelaksana] = useState('teknisi')
+  const goToMain = () => navigation.replace('Report');
+
+  const submit = () => {
+    goToMain();
+  }
+
   return (
     <Box flex='1' bg='white'>
       <ScrollView>
@@ -139,7 +145,8 @@ const FormPemeliharaan: FC<FormPemeliharaanProps> = ({ navigation }) => {
             bg='spars.orange'
             shadow='9.orange'
             _text={{ color: 'white' }}
-            _pressed={{ bg: 'spars.orange', opacity: 0.8 }}>
+            _pressed={{ bg: 'spars.orange', opacity: 0.8 }}
+            onPress={submit}>
             Submit
           </Button>
 

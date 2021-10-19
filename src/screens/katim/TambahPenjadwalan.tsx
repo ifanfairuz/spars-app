@@ -17,6 +17,11 @@ const TambahPenjadwalan: FC<TambahPenjadwalanProps> = ({ navigation }) => {
   const [show_datepicker_start, setShowDatepickerStart] = useState(false);
   const [show_datepicker_end, setShowDatepickerEnd] = useState(false);
   const goBack = () => navigation.canGoBack() && navigation.goBack();
+  const goToMain = () => navigation.replace('DetailReport');
+
+  const submit = () => {
+    goToMain();
+  }
 
   return (
     <VStack flex={1} bg='spars.green' position='relative'>
@@ -146,7 +151,8 @@ const TambahPenjadwalan: FC<TambahPenjadwalanProps> = ({ navigation }) => {
             p='4'
             bg='spars.orange'
             _text={{ color: 'white' }} shadow='9.orange'
-            _pressed={{ bg: 'spars.orange', opacity: 0.8 }}>
+            _pressed={{ bg: 'spars.orange', opacity: 0.8 }}
+            onPress={submit}>
               Tambah Penjadwalan
           </Button>
         </VStack>

@@ -20,7 +20,6 @@ class TakePhoto extends PureComponent<TakePhotoProps, { hasCameraPermission: boo
     this.state = {
       hasCameraPermission: false
     }
-    this.checkPermission();
   }
 
   takePicture = async function(camera: RNCamera) {
@@ -29,9 +28,19 @@ class TakePhoto extends PureComponent<TakePhotoProps, { hasCameraPermission: boo
     console.log(data.uri);
   };
 
+  componentDidMount() {
+    this.checkPermission();
+  }
+
   checkPermission() {
     return PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS['CAMERA'])
-    .then(allow => this.setState({ hasCameraPermission: !!allow }));
+    .then(allow => {
+      this.setState({ hasCameraPermission: !!allow });
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS['CAMERA'])
+      .then(allow => {
+        this.setState({ hasCameraPermission: !!allow });
+      })
+    });
   }
 
   render() {

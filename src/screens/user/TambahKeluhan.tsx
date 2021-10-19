@@ -14,6 +14,11 @@ export type TambahKeluhanProps = UserScreenProps<'TambahKeluhan'>;
 const TambahKeluhan: FC<TambahKeluhanProps> = ({ navigation }) => {
   const goToPhoto = () => navigation.navigate('TakePhoto');
   const goToTakeBarcode = () => navigation.navigate('TakeBarcode');
+  const goToMain = () => navigation.popToTop();
+
+  const submit = () => {
+    goToMain();
+  }
   
   return (
     <Box flex='1' bg='white'>
@@ -78,7 +83,8 @@ const TambahKeluhan: FC<TambahKeluhanProps> = ({ navigation }) => {
             bg='spars.orange'
             shadow='9.orange'
             _text={{ color: 'white' }}
-            _pressed={{ bg: 'spars.orange', opacity: 0.8 }}>
+            _pressed={{ bg: 'spars.orange', opacity: 0.8 }}
+            onPress={submit}>
             Tambah Keluhan
           </Button>
 

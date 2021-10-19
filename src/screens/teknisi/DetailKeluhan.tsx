@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { HStack, ScrollView, Text, VStack, Pressable, ArrowBackIcon, Button, Box, Image, Center, ChevronRightIcon, TextArea, Radio } from 'native-base';
+import { HStack, ScrollView, Text, VStack, Pressable, ArrowBackIcon, Button, Box, Image, Center, ChevronRightIcon, TextArea, Radio, Actionsheet } from 'native-base';
 import { GlassBg, Label } from '@components';
 import { Dimensions, ListRenderItem } from 'react-native';
 import { TeknisiScreenProps } from '.';
@@ -13,7 +13,13 @@ export type ReportProps = TeknisiScreenProps<'Report'>;
 const Report: FC<ReportProps> = ({ navigation }) => {
   const [head_height, setHeadHeight] = useState(0);
   const [carousel_active, setCarouselActive] = useState(0);
+  const [riwayatOpen, setRiwayatOpen] = useState(false);
   const goBack = () => navigation.canGoBack() && navigation.goBack();
+  const goToMain = () => navigation.replace('Report');
+
+  const submit = () => {
+    goToMain();
+  }
   
   const renderCarouselItem: ListRenderItem<string> = ({item, index}) => {
     return (
@@ -40,7 +46,8 @@ const Report: FC<ReportProps> = ({ navigation }) => {
             bg='spars.orange'
             px='4'
             _text={{ color: 'white' }}
-            _pressed={{ bg: 'spars.orange', opacity: 0.9 }}>
+            _pressed={{ bg: 'spars.orange', opacity: 0.9 }}
+            onPress={() => setRiwayatOpen(true)}>
             Riwayat
           </Button>
         </HStack>
@@ -139,7 +146,8 @@ const Report: FC<ReportProps> = ({ navigation }) => {
               py='3'
               variant='outline' 
               borderColor='spars.grey' _text={{ color: 'black' }}
-              _pressed={{ bg: 'white', opacity: 0.8, borderColor: 'spars.grey' }}>
+              _pressed={{ bg: 'white', opacity: 0.8, borderColor: 'spars.grey' }}
+              onPress={goBack}>
               Belum Selesai
             </Button>
             <Button
@@ -148,12 +156,25 @@ const Report: FC<ReportProps> = ({ navigation }) => {
               py='3'
               bg='spars.orange'
               _text={{ color: 'white' }} shadow='9.orange'
-              _pressed={{ bg: 'spars.orange', opacity: 0.8 }}>
+              _pressed={{ bg: 'spars.orange', opacity: 0.8 }}
+              onPress={submit}>
               Selesai
             </Button>
           </HStack>
         </VStack>
       </ScrollView>
+      <Actionsheet isOpen={riwayatOpen} onClose={() => setRiwayatOpen(false)}>
+        <Actionsheet.Content>
+          <ScrollView width="100%">
+            {[1,2,3,4,5].map(r => (
+              <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
+                <Text color='spars.grey' fontSize='16'>Keluhan</Text>
+                <Text bold>10 - 11 - 2021</Text>
+              </HStack>
+            ))}
+          </ScrollView>
+        </Actionsheet.Content>
+      </Actionsheet>
     </VStack>
   );
 }

@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { HStack, Text, VStack, Pressable, ArrowBackIcon, ChevronDownIcon, ChevronRightIcon, Box, FlatList, Actionsheet, ScrollView } from 'native-base';
+import { HStack, Text, VStack, Pressable, ArrowBackIcon, ChevronDownIcon, ChevronRightIcon, Box, FlatList, Actionsheet, ScrollView, Select } from 'native-base';
 import { GlassBg, ReportCardKatim } from '@components';
 import { ListRenderItem } from 'react-native';
 import { KatimScreenProps } from '.';
@@ -50,10 +50,18 @@ const DetailReport: FC<DetailReportProps> = ({ navigation }) => {
               <Text bold color='white' fontSize='16'>Report</Text>
             </HStack>
             <VStack py='5' px='6' bg='white' borderTopRadius='20'>
-              <Pressable flexDirection='row' py='4' pr='4' pl='6' justifyContent='space-between' alignItems='center' borderRadius='9' bg='white' shadow='5'>
-                <Text fontSize='md' bold>Selesai</Text>
-                <ChevronDownIcon size='sm' />
-              </Pressable>
+              <Box borderRadius='9' bg='white' shadow='5'>
+                <Select
+                  variant='unstyled'
+                  borderWidth='0'
+                  px='5'
+                  placeholder='Filter Bulan'
+                  selectedValue={'selesai'}
+                  dropdownIcon={<ChevronDownIcon size='sm' mr='3' />}>
+                  <Select.Item value='selesai' label='Selesai' />
+                  <Select.Item value='belumselesai' label='Belum Selesai' />
+                </Select>
+              </Box>
             </VStack>
           </VStack>
         } />

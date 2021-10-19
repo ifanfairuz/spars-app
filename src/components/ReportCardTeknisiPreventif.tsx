@@ -3,10 +3,11 @@ import { IVStackProps } from 'native-base/lib/typescript/components/primitives/S
 import React, { FC } from 'react';
 
 export interface ReportCardTeknisiPreventifProps extends IVStackProps {
-  
+  onPemeliharaan?: () => void
+  onRiwayat?: () => void
 }
 
-const ReportCardTeknisiPreventif: FC<ReportCardTeknisiPreventifProps> = ({ ...props }) => {
+const ReportCardTeknisiPreventif: FC<ReportCardTeknisiPreventifProps> = ({ onPemeliharaan, onRiwayat, ...props }) => {
   return (
     <VStack space='md' p='5' bg='white' shadow='5' borderRadius='8' {...props}>
       <HStack alignItems='center' justifyContent='space-between'>
@@ -32,14 +33,16 @@ const ReportCardTeknisiPreventif: FC<ReportCardTeknisiPreventifProps> = ({ ...pr
           flex='1'
           variant='outline' 
           borderColor='spars.grey' _text={{ color: 'black' }}
-          _pressed={{ bg: 'white', opacity: 0.8, borderColor: 'spars.grey' }}>
+          _pressed={{ bg: 'white', opacity: 0.8, borderColor: 'spars.grey' }}
+          onPress={onRiwayat}>
           Cek Riwayat
         </Button>
         <Button
           flex='1'
           bg='spars.orange'
           _text={{ color: 'white' }} shadow='9.orange'
-          _pressed={{ bg: 'spars.orange', opacity: 0.8 }}>
+          _pressed={{ bg: 'spars.orange', opacity: 0.8 }}
+          onPress={onPemeliharaan}>
           Pemeliharaan
         </Button>
       </HStack>
