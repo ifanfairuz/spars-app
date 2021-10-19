@@ -117,6 +117,9 @@ function generateShadow(name: string, color: string) {
 }
 
 export const theme = extendTheme({
+  config: {
+    initialColorMode: 'light'
+  },
   colors: {
     spars: {
       whitelight: 'rgba(255, 255, 255, 0.4)',

@@ -19,7 +19,7 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation }) => {
     return (
       <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={item} alt='image' style={{ width: '100%' }} />
     );
-}
+  }
 
   return (
     <VStack flex={1} bg='spars.green'>
