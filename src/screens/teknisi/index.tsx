@@ -38,7 +38,7 @@ export type TeknisiScreenProps<T extends keyof ParamList> = NativeStackScreenPro
 
 const TeknisiScreen: FC = () => {
   return (
-    <UserNavigation.Navigator initialRouteName='FormPemeliharaan'>
+    <UserNavigation.Navigator>
       <UserNavigation.Screen
         name='DataTugas'
         component={DataTugas}
