@@ -7,6 +7,7 @@ import { ErrorException, NetworkErrorException } from '@support/http/exception';
 import Params from '@support/http/contract/Params';
 import { stringify } from 'query-string';
 import { validate } from '@support/helpers/validation';
+import { ParamToFormData } from '@support/helpers/functions';
 
 export default class Http {
 
@@ -36,7 +37,7 @@ export default class Http {
       // Setting Headers
       if (!conf.headers) conf.headers = {};
       conf.headers['Accept'] = 'application/json';
-      conf.headers['Content-Type'] = 'application/json';
+      conf.headers['Content-Type'] = 'multipart/form-data';
 
       return conf;
     }, (error) => {
@@ -65,14 +66,16 @@ export default class Http {
 
   /**
    * post
+   * @param {ClassConstructor} url
    * @param {string} url
    * @param {object} data
+   * @param {AxiosRequestConfig|undefined} config
    */
-  protected post<T extends Response>(responseType: ClassConstructor<T> ,url: string, data: Params = {} as Params, config?: AxiosRequestConfig): Promise<T | ErrorException | any> {
-    return this.provider.post(url, data, config)
+  protected post<T extends Response>(responseType: ClassConstructor<T>, url: string, data: Params = {} as Params, config?: AxiosRequestConfig): Promise<T | ErrorException | any> {
+    return this.provider.post(url, ParamToFormData(data), config)
     .then((res: AxiosResponse<any>) => {
       if (res.data) {
-        if (res.data.status) {
+        if (res.data.msg == 'success') {
           return plainToClass(responseType, res.data);
         }
         return Promise.reject(ErrorException.create(res.data, res));
@@ -103,15 +106,16 @@ export default class Http {
 
   /**
    * get
+   * @param {ClassConstructor} url
    * @param {string} url
-   * @param {object} data
+   * @param {AxiosRequestConfig|undefined} config
    */
-  protected get<T extends Response>(responseType: ClassConstructor<T> ,url: string, config?: AxiosRequestConfig): Promise<T | ErrorException | any> {
+  protected get<T extends Response>(responseType: ClassConstructor<T>, url: string, config?: AxiosRequestConfig): Promise<T | ErrorException | any> {
     if (config?.params) config.params = undefined;
     return this.provider.get(url, config)
     .then((res: AxiosResponse<any>) => {
       if (res.data) {
-        if (res.data.status) {
+        if (res.data.msg == 'success') {
           return plainToClass(responseType, res.data);
         }
         return Promise.reject(ErrorException.create(res.data, res));

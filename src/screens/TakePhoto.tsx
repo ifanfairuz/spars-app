@@ -36,10 +36,12 @@ class TakePhoto extends PureComponent<TakePhotoProps, { hasCameraPermission: boo
     return PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS['CAMERA'])
     .then(allow => {
       this.setState({ hasCameraPermission: !!allow });
-      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS['CAMERA'])
-      .then(allow => {
-        this.setState({ hasCameraPermission: !!allow });
-      })
+      if (!allow) {
+        PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS['CAMERA'])
+        .then(allow => {
+          this.setState({ hasCameraPermission: !!allow });
+        })
+      }
     });
   }
 

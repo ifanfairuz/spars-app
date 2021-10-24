@@ -58,13 +58,13 @@ const MainScreen: FC = () => {
   }
 
   const renderScreen = () => {
-    if (state.user) {
-      switch (state.user.username) {
-        case 'user':
+    if (state.user?.id_users) {
+      switch (state.user.level_name) {
+        case 'User':
           return <MainNavigation.Screen name='Main' component={UserScreen} />;
-        case 'teknisi':
+        case 'Teknisi':
           return <MainNavigation.Screen name='Main' component={TeknisiScreen} />;
-        case 'katim':
+        case 'Katim':
           return <MainNavigation.Screen name='Main' component={KatimScreen} />;
       }
     }

@@ -31,10 +31,12 @@ class TakeBarcode extends PureComponent<TakeBarcodeProps, { hasCameraPermission:
     return PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS['CAMERA'])
     .then(allow => {
       this.setState({ hasCameraPermission: !!allow });
-      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS['CAMERA'])
-      .then(allow => {
-        this.setState({ hasCameraPermission: !!allow });
-      })
+      if (!allow) {
+        PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS['CAMERA'])
+        .then(allow => {
+          this.setState({ hasCameraPermission: !!allow });
+        })
+      }
     });
   }
 

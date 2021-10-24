@@ -25,7 +25,7 @@ export default class ErrorException extends Error {
    */
    static create(data: any, error: any)
    {
-     let object = new ErrorException(data.status, data.message, data?.error, error);
+     let object = new ErrorException(data.msg == 'success', data.message || data.msg, data?.error, error);
      return object;
    }
 }

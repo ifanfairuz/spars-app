@@ -2,7 +2,13 @@ import { Action, ActionNoPayload } from "./_type";
 
 export type State = {
   user?: {
-    username: string
+    id_users: string,
+    full_name: string,
+    passcode: string,
+    id_level: string,
+    level_name: string,
+    nama_rumah_sakit: string,
+    foto: string,
   },
   loading: boolean
 };
