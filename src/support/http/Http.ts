@@ -71,7 +71,7 @@ export default class Http {
    * @param {object} data
    * @param {AxiosRequestConfig|undefined} config
    */
-  protected post<T extends Response>(responseType: ClassConstructor<T>, url: string, data: Params = {} as Params, config?: AxiosRequestConfig): Promise<T | ErrorException | any> {
+  protected post<T extends Response>(responseType: ClassConstructor<T>, url: string, data: Params = {} as Params, config?: AxiosRequestConfig): Promise<T> {
     return this.provider.post(url, ParamToFormData(data), config)
     .then((res: AxiosResponse<any>) => {
       if (res.data) {
@@ -110,7 +110,7 @@ export default class Http {
    * @param {string} url
    * @param {AxiosRequestConfig|undefined} config
    */
-  protected get<T extends Response>(responseType: ClassConstructor<T>, url: string, config?: AxiosRequestConfig): Promise<T | ErrorException | any> {
+  protected get<T extends Response>(responseType: ClassConstructor<T>, url: string, config?: AxiosRequestConfig): Promise<T> {
     if (config?.params) config.params = undefined;
     return this.provider.get(url, config)
     .then((res: AxiosResponse<any>) => {
@@ -147,7 +147,7 @@ export default class Http {
   /**
    * execute
    */
-  public execute<R extends Response, P extends Params>(request: Request<R, P>): Promise<R | ErrorException | any> {
+  public execute<R extends Response, P extends Params>(request: Request<R, P>): Promise<R> {
     const validation = request.data ? validate(request.data.constructor(), request.data) : true;
     if (!validation) request.data = {} as P;
     if (request.method == HttpMethod.POST) {
