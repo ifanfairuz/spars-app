@@ -1,3 +1,5 @@
+import UnauthErrorException from "./UnauthErrorException";
+
 export default class ErrorException extends Error {
   status: boolean = false;
   error?: string;
@@ -25,7 +27,10 @@ export default class ErrorException extends Error {
    */
    static create(data: any, error: any)
    {
-     let object = new ErrorException(data.msg == 'success', data.message || data.msg, data?.error, error);
-     return object;
+      if (data?.msg == 'maaf anda harus login kembali') {
+        return new UnauthErrorException(false, data?.message || data?.msg, data?.error, error);
+      }
+
+      return new ErrorException(data?.msg == 'success', data?.message || data?.msg, data?.error, error);
    }
 }

@@ -10,7 +10,7 @@ export default class NetworkErrorException extends ErrorException {
    */
   showErrorAlert() {
     if (alert_shown) return;
-    Alert.alert('Network', 'Please check your connection', [{
+    Alert.alert('Jaringan', 'Pastikan Anda terhubung ke internet.', [{
       text: 'OK',
       onPress: () => alert_shown = false
     }]);

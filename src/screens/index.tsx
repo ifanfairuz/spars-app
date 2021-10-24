@@ -9,6 +9,7 @@ import SplashScreen from "./SplashScreen";
 import UserScreen from "./user";
 import KatimScreen from './katim';
 import TeknisiScreen from './teknisi';
+import http from '@support/http';
 
 const MainNavigation = createNativeStackNavigator();
 
@@ -44,6 +45,7 @@ const MainScreen: FC = () => {
         dispatch({ type: 'SET_USER', payload: user });
         return user;
       });
+      http.setLogoutHandler(() => authContext.logout());
       dispatch({ type: 'SET_LOADING', payload: false });
       return user;
     }

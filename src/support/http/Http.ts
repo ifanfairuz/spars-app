@@ -8,18 +8,27 @@ import Params from '@support/http/contract/Params';
 import { stringify } from 'query-string';
 import { validate } from '@support/helpers/validation';
 import { ParamToFormData } from '@support/helpers/functions';
+import UnauthErrorException from './exception/UnauthErrorException';
 
 export default class Http {
 
   provider: AxiosInstance;
   config: Config;
   token: string = '';
+  onLogout?: () => void;
 
   constructor() {
     this.provider = axios.create();
     this.config = config;
     this.settingRequest();
     this.settingResponse();
+  }
+
+  /**
+   * set logout handler
+   */
+  public setLogoutHandler(handler: () => void) {
+    this.onLogout = handler;
   }
 
   /**
@@ -91,7 +100,11 @@ export default class Http {
       if (error instanceof ErrorException) return Promise.reject(error);
 
       if (error.config && error.response && error.response.data) {
-        return Promise.reject(ErrorException.create(error.response.data, error));
+        const exception = ErrorException.create(error.response.data, error);
+        if (exception instanceof UnauthErrorException) {
+          exception.showErrorAlert(this.onLogout);
+        }
+        return Promise.reject(exception);
       }
 
       if (error.message == 'Network Error') {
@@ -131,7 +144,11 @@ export default class Http {
       if (error instanceof ErrorException) return Promise.reject(error);
 
       if (error.config && error.response && error.response.data) {
-        return Promise.reject(ErrorException.create(error.response.data, error));
+        const exception = ErrorException.create(error.response.data, error);
+        if (exception instanceof UnauthErrorException) {
+          exception.showErrorAlert(this.onLogout);
+        }
+        return Promise.reject(exception);
       }
 
       if (error.message == 'Network Error') {
