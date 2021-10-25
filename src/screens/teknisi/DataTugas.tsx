@@ -1,18 +1,35 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
 import { HStack, Text, VStack, Pressable, ChevronRightIcon, Box, FlatList, Actionsheet, ScrollView, Select, ChevronDownIcon, Center } from 'native-base';
 import { GlassBg, ReportCardTeknisiKorektif, ReportCardTeknisiPreventif } from '@components';
-import { ListRenderItem } from 'react-native';
+import { ListRenderItem, RefreshControl } from 'react-native';
 import { TeknisiScreenProps } from '.';
+import KeluhanTeknisiContext from '@context/keluhan/KeluhanTeknisiContext';
+import Keluhan from '@store/models/Keluhan';
 
 export type DataTugasProps = TeknisiScreenProps<'DataTugas'>;
 
 const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
+  const keluhanContext = useContext(KeluhanTeknisiContext);
   const [riwayatOpen, setRiwayatOpen] = useState(false);
   const goToFormPemeliharaan = () => navigation.navigate('FormPemeliharaan');
-  const goToFormKeluhan = () => navigation.navigate('DetailKeluhan');
+  const goToFormKeluhan = (data: Keluhan) => navigation.navigate('DetailKeluhan', { data });
 
-  const renderReport: ListRenderItem<number> = ({ index }) => {
-    const isPreventif = index % 2 == 0;
+  const loading_refresh = useMemo(() => keluhanContext.state.loading, [keluhanContext.state.loading]);
+  const refresh = () => {
+    keluhanContext.init();
+  }
+
+  const datas = useMemo(() => {
+    const d = [...keluhanContext.state.datas];
+    return d;
+  }, [keluhanContext.state.datas]);
+
+  useEffect(() => {
+    if (datas.length <= 0) refresh();
+  }, []);
+
+  const renderCard: ListRenderItem<Keluhan> = ({ item }) => {
+    const isPreventif = !item.id_keluhan;
     return (
       <VStack
         px='6' pb='4' mb='4'
@@ -21,7 +38,7 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
         borderBottomWidth={isPreventif ? '0' : '1'}
         borderColor='spars.darkgrey'>
         <HStack justifyContent='space-between' alignItems='center'>
-          <Text bold fontSize='xs' color='spars.grey'>17 JANUARI 2020</Text>
+          <Text bold fontSize='xs' color='spars.grey'>{ item.tgl_masuk.toUpperCase() }</Text>
           <Center
             bg={isPreventif ? 'spars.blue' : 'spars.green'}
             p='1' px='4'
@@ -36,11 +53,11 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
             onPemeliharaan={goToFormPemeliharaan}
             onRiwayat={() => setRiwayatOpen(true)} />
         ) : (
-          <ReportCardTeknisiKorektif onPress={goToFormKeluhan} />
+          <ReportCardTeknisiKorektif onPress={() => goToFormKeluhan(item)} data={item} />
         ) }
         { !isPreventif && (
           <HStack justifyContent='space-between'>
-            <Text bold color='spars.green'>SELESAI</Text>
+            <Text bold color='spars.green'>{ item.status.toUpperCase() }</Text>
             <Pressable flexDirection='row' onPress={() => setRiwayatOpen(true)}>
               <Text bold>Lihat Riwayat</Text>
               <ChevronRightIcon size='sm' />
@@ -54,8 +71,13 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
   return (
     <Box flex={1} bg='white'>
       <FlatList
-        data={[0,1,2,3,4,5,6,7,8,9]}
-        renderItem={renderReport}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading_refresh}
+            onRefresh={refresh} />
+        }
+        data={datas}
+        renderItem={renderCard}
         nestedScrollEnabled={true}
         contentContainerStyle={{
           borderTopStartRadius: 20,

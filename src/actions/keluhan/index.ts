@@ -4,6 +4,7 @@ import GetKeluhanRequest from "./GetKeluhanRequest"
 import GetAlatRequest, { GetAlatResponse } from "@actions/GetAlatRequest";
 import AddKeluhanRequest from "./AddKeluhanRequest";
 import GetTeknisiRequest, { GetTeknisiResponse } from "@actions/GetTeknisiRequest";
+import TanganiKeluhanRequest from "./TanganiKeluhanRequest";
 
 let cancelTokenSearch: Canceler|undefined;
 let cancelTokenAlatSearch: Canceler|undefined;
@@ -40,8 +41,10 @@ export async function approveKeluhan(id_keluhan: string, id_teknisi: string) {
   return (response && response.response == 'success');
 }
 
-export async function tanganiKeluhan() {
-  
+export async function tanganiKeluhan(id_keluhan: string, hasil_penanganan: string, catatan_teknisi: string = '', photos: string[] = []) {
+  const request = new TanganiKeluhanRequest(id_keluhan, hasil_penanganan, catatan_teknisi, photos);
+  const response = await http.execute(request).catch(() => undefined);
+  return (response && response.response == 'success');
 }
 
 export default {

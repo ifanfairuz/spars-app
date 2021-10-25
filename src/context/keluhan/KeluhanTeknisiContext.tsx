@@ -5,6 +5,7 @@ import { getKeluhan, tanganiKeluhan } from "@actions/keluhan";
 
 const KeluhanTeknisiContext = createContext({
   state,
+  init: async () => {},
   getKeluhan,
   tanganiKeluhan,
 });
@@ -12,11 +13,24 @@ const KeluhanTeknisiContext = createContext({
 export const KeluhanTeknisiContextProvider: FC<ContextProviderProps<State, KeluhanAction>> = ({ dispatch, state, children }) => {
   const context = useMemo(() => ({
     state,
-    getKeluhan: async () => {
-      return await getKeluhan();
+    init: async () => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const datas = await getKeluhan('', false, false);
+      dispatch({ type: 'SET_KELUHAN', payload: datas});
+      dispatch({ type: 'SET_LOADING', payload: false });
     },
-    tanganiKeluhan: async () => {
-      return await tanganiKeluhan();
+    getKeluhan: async () => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const datas = await getKeluhan('', false, false);
+      dispatch({ type: 'SET_KELUHAN', payload: datas});
+      dispatch({ type: 'SET_LOADING', payload: false });
+      return datas;
+    },
+    tanganiKeluhan: async (id_keluhan: string, hasil_penanganan: string, catatan_teknisi: string = '', photos: string[] = []) => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const datas = await tanganiKeluhan(id_keluhan, hasil_penanganan, catatan_teknisi, photos);
+      dispatch({ type: 'SET_LOADING', payload: false });
+      return datas;
     },
   }), [state]);
 

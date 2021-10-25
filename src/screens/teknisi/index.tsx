@@ -7,6 +7,7 @@ import FormPemeliharaan from './FormPemeliharaan';
 import { Text } from 'native-base';
 import keluhanReducer from '@store/keluhan';
 import { KeluhanTeknisiContextProvider } from '@context/keluhan/KeluhanTeknisiContext';
+import Keluhan from '@store/models/Keluhan';
 
 const UserNavigation = createNativeStackNavigator();
 
@@ -32,7 +33,7 @@ const screenOptions: Record<string, NativeStackNavigationOptions> = {
 type ParamList = {
   DataTugas: undefined;
   Report: undefined;
-  DetailKeluhan: undefined;
+  DetailKeluhan: { data: Keluhan };
   FormPemeliharaan: undefined;
 };
 

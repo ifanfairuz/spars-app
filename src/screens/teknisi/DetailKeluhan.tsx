@@ -1,29 +1,68 @@
-import React, { FC, useState } from 'react';
-import { HStack, ScrollView, Text, VStack, Pressable, ArrowBackIcon, Button, Box, Image, Center, ChevronRightIcon, TextArea, Radio, Actionsheet } from 'native-base';
-import { GlassBg, Label } from '@components';
+import React, { FC, useContext, useMemo, useState } from 'react';
+import { HStack, ScrollView, Text, VStack, Pressable, ArrowBackIcon, Button, Box, Image, Center, ChevronRightIcon, TextArea, Radio, Actionsheet, Toast } from 'native-base';
+import { GlassBg, Label, Loader, TakePhoto } from '@components';
 import { Dimensions, ListRenderItem } from 'react-native';
 import { TeknisiScreenProps } from '.';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
+import moment from 'moment';
+import KeluhanTeknisiContext from '@context/keluhan/KeluhanTeknisiContext';
+import { Asset } from 'react-native-image-picker';
+import { imageAssetToBase64Uri } from '@support/helpers/image';
 
-const IMAGE = 'https://awsimages.detik.net.id/community/media/visual/2019/12/19/f934030c-8e21-4959-a9e7-659731a87eb9_169.jpeg';
-const IMAGES = [IMAGE,IMAGE,IMAGE,IMAGE,IMAGE];
+export type DetailKeluhanProps = TeknisiScreenProps<'DetailKeluhan'>;
 
-export type ReportProps = TeknisiScreenProps<'Report'>;
-
-const Report: FC<ReportProps> = ({ navigation }) => {
+const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
+  const keluhanContext = useContext(KeluhanTeknisiContext);
   const [head_height, setHeadHeight] = useState(0);
   const [carousel_active, setCarouselActive] = useState(0);
   const [riwayatOpen, setRiwayatOpen] = useState(false);
+  const [catatan, setCatatan] = useState('');
+  const [hasil_penanganan, setHasilPenanganan] = useState('');
+  const [images, setImages] = useState<Asset[]>([]);
+  const [loading, setLoading] = useState(false);
+  const images_list = useMemo(() => images.map(i => i.uri || ''), [images]);
   const goBack = () => navigation.canGoBack() && navigation.goBack();
   const goToMain = () => navigation.replace('Report');
+  
+  const data = useMemo(() => {
+    const { data } = route.params;
+    const foto_kejadian = [
+      [data.detail.foto_mini_1, data.detail.foto_zoom_1],
+      [data.detail.foto_mini_2, data.detail.foto_zoom_2],
+      [data.detail.foto_mini_3, data.detail.foto_zoom_3]
+    ].filter(i => (i[0] && i[0] !== ''));
+    const foto_penanganan = [
+      [data.detail.foto_penanganan_mini_1, data.detail.foto_penanganan_zoom_1],
+      [data.detail.foto_penanganan_mini_2, data.detail.foto_penanganan_zoom_2],
+      [data.detail.foto_penanganan_mini_3, data.detail.foto_penanganan_zoom_3]
+    ].filter(i => (i[0] && i[0] !== ''));
+    return {
+      ...data,
+      foto_kejadian,
+      foto_penanganan
+    }
+  }, [route.params.data]);
 
   const submit = () => {
-    goToMain();
+    if (!data.id_keluhan || !hasil_penanganan) {
+      Toast.show({ title: 'Mohon lengkapi data', status: 'error', placement: 'top' });
+      return;
+    }
+    setLoading(true);
+    const photos = images.map(i => i.base64 || '');
+    keluhanContext.tanganiKeluhan(data.id_keluhan, hasil_penanganan, catatan, photos)
+    .then(success => {
+      if (success) {
+        success && goToMain();
+        keluhanContext.getKeluhan();
+      }
+    })
+    .finally(() => setLoading(false));
   }
   
-  const renderCarouselItem: ListRenderItem<string> = ({item, index}) => {
+  const renderCarouselItem: ListRenderItem<string[]> = ({ item }) => {
     return (
-      <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={item} alt='image' style={{ width: '100%' }} />
+      <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={item[0]} alt='image' style={{ width: '100%' }} />
     );
   }
   
@@ -58,29 +97,30 @@ const Report: FC<ReportProps> = ({ navigation }) => {
               <Image size='xs' borderRadius='100' source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwOFeX66lJg9GvAuptHMqmITaKozykBVDAqFdLvOnrzU3ZUz36U9w8e1a6sxJWclaosmU&usqp=CAU' }} alt='profile' />
             </Box>
             <VStack>
-              <Text color='spars.green' bold>Ahmad Bayu</Text>
+              <Text color='spars.green' bold>{ data.nama_user }</Text>
               <Text color='spars.grey' fontWeight='light'>Pelapor</Text>
             </VStack>
             <Center
               alignSelf='flex-start'
               ml='auto'
-              bg={true ? 'spars.blue' : 'spars.green'}
+              bg={data.id_keluhan ? 'spars.green' : 'spars.blue'}
               p='1' px='4'
               borderRadius='50'
               _text={{ fontSize: 'xs', color: 'white', letterSpacing: '1' }}>
-              { true ? 'Preventif' : 'Korektif' }
+              { data.id_keluhan ? 'Korektif' : 'Preventif' }
             </Center>
           </HStack>
           <VStack px='6' space='sm' mb='5'>
             <Carousel
               layout='tinder'
-              data={IMAGES}
+              data={data.foto_kejadian}
               renderItem={renderCarouselItem}
+              keyExtractor={(i: string[]) => i[0]}
               sliderWidth={Dimensions.get('window').width-40}
               itemWidth={Dimensions.get('window').width-40}
               onSnapToItem={i => setCarouselActive(i)} />
             <Pagination
-              dotsLength={IMAGES.length}
+              dotsLength={data.foto_kejadian.length}
               activeDotIndex={carousel_active}
               containerStyle={{ justifyContent: 'flex-start', paddingVertical: 0, paddingHorizontal: 0, marginTop: 5 }}
               dotStyle={{
@@ -100,44 +140,58 @@ const Report: FC<ReportProps> = ({ navigation }) => {
               inactiveDotScale={0.7}
             />
           </VStack>
-          <VStack px='6' space='xs' mb='10'>
+          <VStack px='6' space='xs'>
             <HStack alignItems='flex-start' justifyContent='space-between'>
               <VStack>
-                <Text fontSize='md' bold>Hematology Analyzer</Text>
-                <HStack space='sm'>
-                  <Text color='spars.grey' fontWeight='light'>Merk Alat</Text>
-                  <Text color='spars.grey' bold>Lab A12</Text>
-                </HStack>
+                <Text fontSize='md' bold>{ data.nama_alat }</Text>
+                <Text color='spars.grey' fontWeight='light'>{ data.no_seri }</Text>
+                <Text color='spars.grey' bold>{ data.nama_ruangan }</Text>
               </VStack>
+              {!!data.insiden && 
               <Label
                 bg='white'
                 borderWidth='1'
                 borderColor='spars.orange'
-                _text={{ fontSize: 'xs', color: 'spars.orange' }}>KNC</Label>
+                _text={{ fontSize: 'xs', color: 'spars.orange' }}>{ data.insiden }</Label>}
             </HStack>
 
-            <Box bg='spars.bluelight' justifyContent='center' alignItems='center' borderRadius='8' p='4'>
-              <Text color='spars.darkblue' fontWeight='700'>Sensor Tidak Berfungsi</Text>
+            <Box bg='spars.bluelight' justifyContent='center' alignItems='center' borderRadius='8' p='4' flex='1'>
+              <Text color='spars.darkblue' fontWeight='700'>{ data.detail.deskripsi_keluhan }</Text>
             </Box>
 
             <HStack justifyContent='space-between' my='1'>
               <Text color='spars.grey'>Tanggal Penanganan</Text>
               <Pressable flexDirection='row'>
-                <Text bold>19 Februari 2021</Text>
+                <Text bold>{ moment().format('DD MMMM YYYY') }</Text>
                 <ChevronRightIcon size='sm' />
               </Pressable>
             </HStack>
 
-            <TextArea h={40} placeholder='Catatan Teknisi' textAlignVertical='top' />
+            <TextArea h={40} placeholder='Catatan Teknisi' textAlignVertical='top' value={catatan} onChangeText={setCatatan} />
 
             <VStack space='md' mb='5'>
               <Text bold>Hasil Penanganan</Text>
-              <Radio.Group name='hasil_penanganan' flexDirection='row' justifyContent='space-between'>
-                <Radio alignItems='flex-start' value='baik'>Baik</Radio>
-                <Radio alignItems='flex-start' value='kurang_baik'>Kurang Baik</Radio>
-                <Radio alignItems='flex-start' value='tidak_layak'>Tidak Layak</Radio>
+              <Radio.Group name='hasil_penanganan' flexDirection='row' justifyContent='space-between' value={hasil_penanganan} onChange={setHasilPenanganan}>
+                <Radio alignItems='flex-start' value='Baik'>Baik</Radio>
+                <Radio alignItems='flex-start' value='Kurang Baik'>Kurang Baik</Radio>
+                <Radio alignItems='flex-start' value='Tidak Layak'>Tidak Layak</Radio>
               </Radio.Group>
             </VStack>
+
+            <TakePhoto
+              values={images_list}
+              onAdd={datas => {
+                const data = datas.filter(d => d.uri && d.base64);
+                setImages([
+                  ...images,
+                  ...data
+                ]);
+              }}
+              onRemove={i => {
+                images.splice(i, 1);
+                setImages([...images]);
+              }} />
+
           </VStack>
           <HStack px='6' space='md'>
             <Button
@@ -175,8 +229,9 @@ const Report: FC<ReportProps> = ({ navigation }) => {
           </ScrollView>
         </Actionsheet.Content>
       </Actionsheet>
+      <Loader show={loading} />
     </VStack>
   );
 }
 
-export default Report;
+export default DetailKeluhan;
