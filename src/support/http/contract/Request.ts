@@ -10,5 +10,6 @@ export default interface Request<T extends Response, P extends Params> {
   data?: P
   config?: AxiosRequestConfig
   response: ClassConstructor<T>
-  prefix: string;
+  prefix: string
+  setup(): Promise<void>
 }

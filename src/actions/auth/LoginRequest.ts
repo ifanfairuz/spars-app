@@ -1,5 +1,6 @@
 import { BaseParams, BaseRequest, BaseResponse } from "@support/http";
 import { HttpMethod } from "@support/http/contract/Request";
+import User from "@store/models/User";
 
 export class LoginParams extends BaseParams {
   act: string = 'login'
@@ -15,7 +16,8 @@ export class LoginParams extends BaseParams {
 }
 
 export class LoginResponse extends BaseResponse {
-  respon: Array<any> = [];
+  msg: string = '';
+  respon: Array<User> = [];
 
   get user() {
     if (!(this.respon instanceof Array)) return undefined;
@@ -26,7 +28,7 @@ export class LoginResponse extends BaseResponse {
 export default class LoginRequest extends BaseRequest<LoginResponse, LoginParams> {
   
   constructor(username: string, password: string) {
-    super(HttpMethod.POST, 'login.php', new LoginParams(username, password), LoginResponse);
+    super(HttpMethod.POST, 'svr_login.php', new LoginParams(username, password), LoginResponse);
   }
 
 }

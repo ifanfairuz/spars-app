@@ -5,7 +5,7 @@ import { Logo, Input, GlassBg } from '@components';
 import AuthContext from '@context/AuthContext';
 
 const Login: FC = () => {
-  const [username, setUsername] = useState('arif');
+  const [username, setUsername] = useState('budiman');
   const [password, setPassword] = useState('ded7a');
   const authContext = useContext(AuthContext);
   const login = () => authContext.login(username, password);

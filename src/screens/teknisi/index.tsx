@@ -1,10 +1,12 @@
-import React, { FC } from 'react';
+import React, { FC, useReducer } from 'react';
 import { createNativeStackNavigator, NativeStackNavigationOptions, NativeStackScreenProps } from '@react-navigation/native-stack';
 import DataTugas from './DataTugas';
 import Report from './Report';
 import DetailKeluhan from './DetailKeluhan';
 import FormPemeliharaan from './FormPemeliharaan';
 import { Text } from 'native-base';
+import keluhanReducer from '@store/keluhan';
+import { KeluhanTeknisiContextProvider } from '@context/keluhan/KeluhanTeknisiContext';
 
 const UserNavigation = createNativeStackNavigator();
 
@@ -37,25 +39,29 @@ type ParamList = {
 export type TeknisiScreenProps<T extends keyof ParamList> = NativeStackScreenProps<ParamList, T>;
 
 const TeknisiScreen: FC = () => {
+  const [state, dispatch] = useReducer(keluhanReducer.actions, keluhanReducer.state);
+
   return (
-    <UserNavigation.Navigator>
-      <UserNavigation.Screen
-        name='DataTugas'
-        component={DataTugas}
-        options={screenOptions.DataTugas} />
-      <UserNavigation.Screen
-        name='Report'
-        component={Report}
-        options={screenOptions.Report} />
-      <UserNavigation.Screen
-        name='DetailKeluhan'
-        component={DetailKeluhan}
-        options={screenOptions.DetailKeluhan} />
-      <UserNavigation.Screen
-        name='FormPemeliharaan'
-        component={FormPemeliharaan}
-        options={screenOptions.FormPemeliharaan} />
-    </UserNavigation.Navigator>
+    <KeluhanTeknisiContextProvider state={state} dispatch={dispatch}>
+      <UserNavigation.Navigator>
+        <UserNavigation.Screen
+          name='DataTugas'
+          component={DataTugas}
+          options={screenOptions.DataTugas} />
+        <UserNavigation.Screen
+          name='Report'
+          component={Report}
+          options={screenOptions.Report} />
+        <UserNavigation.Screen
+          name='DetailKeluhan'
+          component={DetailKeluhan}
+          options={screenOptions.DetailKeluhan} />
+        <UserNavigation.Screen
+          name='FormPemeliharaan'
+          component={FormPemeliharaan}
+          options={screenOptions.FormPemeliharaan} />
+      </UserNavigation.Navigator>
+    </KeluhanTeknisiContextProvider>
   );
 }
 

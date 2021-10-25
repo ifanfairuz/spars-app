@@ -1,23 +1,43 @@
-import React, { FC, useState } from 'react';
-import { Dimensions, ListRenderItem } from 'react-native';
+import React, { FC, useContext, useMemo, useState } from 'react';
+import { Dimensions, ListRenderItem, RefreshControl } from 'react-native';
 import { VStack, Text, Box, TextArea, HStack, Image, ArrowBackIcon, Pressable, ScrollView } from 'native-base';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { GlassBg, Label } from '@components';
 import { UserScreenProps } from '.';
+import { getOrDash } from '@support/helpers/string';
+import { imageKeluhan, imagePenanganan } from '@support/helpers/image';
+import KeluhanUserContext from '@context/keluhan/KeluhanUserContext';
 
 export type DetailKeluhanProps = UserScreenProps<'DetailKeluhan'>;
 
-const IMAGE = 'https://awsimages.detik.net.id/community/media/visual/2019/12/19/f934030c-8e21-4959-a9e7-659731a87eb9_169.jpeg';
-const IMAGES = [IMAGE,IMAGE,IMAGE,IMAGE,IMAGE];
-
-
-const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation }) => {
+const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
   const [carousel_active, setCarouselActive] = useState(0);
+  const keluhanContext = useContext(KeluhanUserContext);
+
   const goBack = () => navigation.canGoBack() && navigation.goBack();
 
-  const renderCarouselItem: ListRenderItem<string> = ({item, index}) => {
+  const data = useMemo(() => {
+    const { data } = route.params;
+    const foto_kejadian = [
+      [data.detail.foto_mini_1, data.detail.foto_zoom_1],
+      [data.detail.foto_mini_2, data.detail.foto_zoom_2],
+      [data.detail.foto_mini_3, data.detail.foto_zoom_3]
+    ].filter(i => (i[0] && i[0] !== ''));
+    const foto_penanganan = [
+      [data.detail.foto_penanganan_mini_1, data.detail.foto_penanganan_zoom_1],
+      [data.detail.foto_penanganan_mini_2, data.detail.foto_penanganan_zoom_2],
+      [data.detail.foto_penanganan_mini_3, data.detail.foto_penanganan_zoom_3]
+    ].filter(i => (i[0] && i[0] !== ''));
+    return {
+      ...data,
+      foto_kejadian,
+      foto_penanganan
+    }
+  }, [route.params.data])
+
+  const renderCarouselItem: ListRenderItem<string[]> = ({item, index}) => {
     return (
-      <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={item} alt='image' style={{ width: '100%' }} />
+      <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={imageKeluhan(item[0])} alt='image' style={{ width: '100%' }} />
     );
   }
 
@@ -25,6 +45,11 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation }) => {
     <VStack flex={1} bg='spars.green'>
       <GlassBg h='20%' />
       <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={keluhanContext.state.loading}
+            onRefresh={keluhanContext.getKeluhan} />
+        }
         nestedScrollEnabled={true}
         contentContainerStyle={{
           borderTopStartRadius: 20,
@@ -37,73 +62,90 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation }) => {
           </Pressable>
         </HStack>
         <VStack px='5' py='8' bg='white' borderTopRadius='20' minH={Dimensions.get('window').height}>
-          <HStack justifyContent='space-between' mb='2'>
-            <VStack>
-              <Text fontWeight='700'>Hematology Analyzer</Text>
-              <Text color='spars.grey'>Ruangan A1</Text>
+          <HStack justifyContent='space-between' mb='2' space='xs'>
+            <VStack flex='1'>
+              <Text fontWeight='700' fontSize='md'>{ data.nama_alat }</Text>
+              <Text color='spars.grey'>{ data.nama_ruangan }</Text>
             </VStack>
             <Box>
-              <Label>KTC</Label>
+              {!!data.insiden && <Label>{ data.insiden }</Label>}
             </Box>
           </HStack>
-          <Text color='spars.green2' fontWeight='700'>NS124912398</Text>
+          <Text color='spars.green2' fontWeight='700'>{ data.no_seri }</Text>
           
           <Box bg='spars.bluelight' justifyContent='center' alignItems='center' borderRadius='8' my='5' p='4'>
-            <Text color='spars.darkblue' fontWeight='700'>Proses Penanganan</Text>
+            <Text color='spars.darkblue' fontWeight='700'>{ data.status }</Text>
           </Box>
 
-          <VStack space='sm'>
-            <Text fontWeight='700'>Hematology Analyzer</Text>
-            <TextArea h={20} placeholder='-' textAlignVertical='top' isDisabled />
+          <VStack space='sm' mb='5'>
+            <Text fontWeight='700'>Deskripsi Keluhan</Text>
+            <TextArea h={20} fontWeight='normal' placeholder='-' textAlignVertical='top' isDisabled value={data.detail.deskripsi_keluhan} />
           </VStack>
-          
+
+          {
+            data.foto_kejadian.length > 0 &&
+            <VStack space='sm' mb='5'>
+              <Text fontWeight='700'>Foto Kejadian</Text>
+              <Carousel
+                layout='stack'
+                data={data.foto_kejadian}
+                renderItem={renderCarouselItem}
+                keyExtractor={item => `${data.id_keluhan}-${item[0]}`}
+                sliderWidth={Dimensions.get('window').width-40}
+                itemWidth={Dimensions.get('window').width-40}
+                onSnapToItem={i => setCarouselActive(i)} />
+              <Pagination
+                dotsLength={data.foto_kejadian.length}
+                activeDotIndex={carousel_active}
+                containerStyle={{ justifyContent: 'flex-start', paddingVertical: 0, paddingHorizontal: 0, marginTop: 5 }}
+                dotStyle={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 5,
+                    marginHorizontal: 0,
+                    backgroundColor: '#27AE60'
+                }}
+                inactiveDotStyle={{
+                    backgroundColor: '#C4C4C4'
+                }}
+                dotContainerStyle={{
+                  marginHorizontal: 4
+                }}
+                inactiveDotOpacity={1}
+                inactiveDotScale={0.7}
+              />
+            </VStack>
+          }
+
           <HStack borderWidth='1' borderColor='spars.darkgrey' borderStyle='dashed' py='2' px='3' space='xs' alignItems='center' my='4'>
             <Image size='sm' borderRadius='100' source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwOFeX66lJg9GvAuptHMqmITaKozykBVDAqFdLvOnrzU3ZUz36U9w8e1a6sxJWclaosmU&usqp=CAU' }} alt='profile' />
             <VStack>
-              <Text fontWeight='700'>Wildan Wari</Text>
+              <Text fontWeight='700'>{ getOrDash(data.respon_name) }</Text>
               <Text fontWeight='400'>Teknisi</Text>
             </VStack>
           </HStack>
 
           <VStack space='sm' mb='5'>
-            <Text fontWeight='700'>Foto Kejadian</Text>
-            <Carousel
-              layout='stack'
-              data={IMAGES}
-              renderItem={renderCarouselItem}
-              sliderWidth={Dimensions.get('window').width-40}
-              itemWidth={Dimensions.get('window').width-40}
-              onSnapToItem={i => setCarouselActive(i)} />
-            <Pagination
-              dotsLength={IMAGES.length}
-              activeDotIndex={carousel_active}
-              containerStyle={{ justifyContent: 'flex-start', paddingVertical: 0, paddingHorizontal: 0, marginTop: 5 }}
-              dotStyle={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: 5,
-                  marginHorizontal: 0,
-                  backgroundColor: '#27AE60'
-              }}
-              inactiveDotStyle={{
-                  backgroundColor: '#C4C4C4'
-              }}
-              dotContainerStyle={{
-                marginHorizontal: 4
-              }}
-              inactiveDotOpacity={1}
-              inactiveDotScale={0.7}
-              
-            />
+            <Text fontWeight='700'>Catatan Teknisi</Text>
+            <TextArea h={20} fontWeight='normal' placeholder='-' textAlignVertical='top' isDisabled value={data.catatan_teknisi} />
           </VStack>
 
-          <VStack space='sm'>
-            <Text fontWeight='700'>Hematology Analyzer</Text>
-            <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={IMAGE} alt='image' style={{ width: '100%' }} />
-            <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={IMAGE} alt='image' style={{ width: '100%' }} />
-            <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={IMAGE} alt='image' style={{ width: '100%' }} />
-            <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={IMAGE} alt='image' style={{ width: '100%' }} />
-          </VStack>
+          {
+            data.foto_penanganan.length > 0 &&
+            <VStack space='sm'>
+              <Text fontWeight='700'>Foto Kejadian</Text>
+              { data.foto_penanganan.map(item => 
+                <Image
+                  key={`${data.id_keluhan}-${item[0]}`}
+                  borderRadius='8'
+                  size='2xl'
+                  resizeMode='cover'
+                  resizeMethod='scale'
+                  src={imagePenanganan(item[0])}
+                  alt='image'
+                  style={{ width: '100%' }} />) }
+            </VStack>
+          }
 
         </VStack>
       </ScrollView>

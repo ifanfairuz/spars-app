@@ -5,7 +5,9 @@ import { theme, config } from '@config/native-base';
 import MainScreen from '@screens';
 import moment from 'moment';
 import 'moment/locale/id';
+import { LogBox } from 'react-native';
 
+LogBox.ignoreAllLogs(true);
 moment.locale('id');
 
 const Spars: React.FC = () => {

@@ -1,15 +1,8 @@
-import { Action, ActionNoPayload } from "./_type";
+import { Action, ActionNoPayload } from "@store/_type";
+import User from "@store/models/User";
 
 export type State = {
-  user?: {
-    id_users: string,
-    full_name: string,
-    passcode: string,
-    id_level: string,
-    level_name: string,
-    nama_rumah_sakit: string,
-    foto: string,
-  },
+  user?: User,
   loading: boolean
 };
 export const state: State = {

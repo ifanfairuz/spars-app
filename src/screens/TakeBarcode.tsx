@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, PureComponent } from 'react';
-import { Box, Pressable, VStack, ArrowBackIcon, Text } from 'native-base';
+import { Box, Pressable, VStack, ArrowBackIcon, Text, Toast } from 'native-base';
 import { RNCamera, BarCodeReadEvent } from 'react-native-camera';
 import { StyleSheet, ActivityIndicator, PermissionsAndroid } from 'react-native';
 import BarcodeMask from 'react-native-barcode-mask';
@@ -12,6 +12,7 @@ const PendingView: FC<PropsWithChildren<{}>> = ({ children }) => (
 
 export interface TakeBarcodeProps {
   goBack: () => void,
+  onRead?: (e: BarCodeReadEvent) => void,
   isFocused: boolean
 };
 
@@ -40,8 +41,13 @@ class TakeBarcode extends PureComponent<TakeBarcodeProps, { hasCameraPermission:
     });
   }
 
-  onBarCodeRead({ data }: BarCodeReadEvent) {
-    console.log(data);
+  onBarCodeRead(e: BarCodeReadEvent) {
+    if (e.data != '') {
+      Toast.show({ title: e.data, status: 'success' });
+      if (this.props.onRead) this.props.onRead(e);
+    } else {
+      Toast.show({ title: 'invalid barcode', status: 'error' });
+    }
   }
 
   render() {

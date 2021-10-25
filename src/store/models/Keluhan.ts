@@ -1,0 +1,27 @@
+export default interface Keluhan {
+  id_keluhan: string,
+  tgl_masuk: string,
+  insiden: string,
+  nama_ruangan: string,
+  nama_alat: string,
+  no_seri: string,
+  respon_name: string,
+  nama_user: string,
+  catatan_teknisi: string,
+  status: string,
+  detail: {
+    deskripsi_keluhan: string,
+    foto_mini_1: string,
+    foto_zoom_1: string,
+    foto_mini_2: string,
+    foto_zoom_2: string,
+    foto_mini_3: string,
+    foto_zoom_3: string,
+    foto_penanganan_mini_1: string,
+    foto_penanganan_zoom_1: string,
+    foto_penanganan_mini_2: string,
+    foto_penanganan_zoom_2: string,
+    foto_penanganan_mini_3: string,
+    foto_penanganan_zoom_3: string,
+  }
+}

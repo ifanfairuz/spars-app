@@ -1,17 +1,22 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useContext, useMemo, useState } from 'react';
 import { Box, HStack, Image, ScrollView, Select, Text, VStack, ChevronDownIcon, Stack, Pressable, ArrowForwardIcon, FlatList } from 'native-base';
 import { GlassBg, KeluhanKatim } from '@components';
 import { Dimensions, ListRenderItem } from 'react-native';
 import { gradient } from '@config/native-base';
 import { KatimScreenProps } from '.';
+import AuthContext from '@context/AuthContext';
+import { imageProfile } from '@support/helpers/image';
 
 export type HomePageProps = KatimScreenProps<'HomePage'>;
 
 const HomePage: FC<HomePageProps> = ({ navigation }) => {
+  const authContext = useContext(AuthContext);
   const [head_height, setHeadHeight] = useState(0);
   const goToTerima = () => navigation.navigate('PilihTeknisi');
   const goToTambahJadwal = () => navigation.navigate('TambahPenjadwalan');
   const goToReport = () => navigation.navigate('DetailReport');
+
+  const user = useMemo(() => authContext.state.user, [authContext]);
 
   const renderKeluhan: ListRenderItem<number> = () => {
     return (
@@ -31,11 +36,11 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
         <VStack p='5' space='md' onLayout={e => setHeadHeight(e.nativeEvent.layout.height)}>
           <HStack space='xs' alignItems='flex-start'>
             <Box p='1' bg='white' borderRadius='100'>
-              <Image size='xs' borderRadius='100' source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwOFeX66lJg9GvAuptHMqmITaKozykBVDAqFdLvOnrzU3ZUz36U9w8e1a6sxJWclaosmU&usqp=CAU' }} alt='profile' />
+              <Image size='xs' borderRadius='100' source={{ uri: imageProfile(user?.foto) }} alt='profile' />
             </Box>
             <VStack>
-              <Text color='white' bold fontSize='16'>RSUD Mardi Waluyo - Blitar</Text>
-              <Text color='white' fontSize='12'>Arif Ragil P ( Teknisi )</Text>
+              <Text color='white' bold fontSize='16'>{ user?.nama_rumah_sakit }</Text>
+              <Text color='white' fontSize='12'>{ user?.full_name }</Text>
             </VStack>
           </HStack>
           <HStack justifyContent='space-between' alignItems='center'>

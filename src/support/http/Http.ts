@@ -14,7 +14,6 @@ export default class Http {
 
   provider: AxiosInstance;
   config: Config;
-  token: string = '';
   onLogout?: () => void;
 
   constructor() {
@@ -29,6 +28,13 @@ export default class Http {
    */
   public setLogoutHandler(handler: () => void) {
     this.onLogout = handler;
+  }
+
+  /**
+   * logout
+   */
+  public logout() {
+    if (this.onLogout) this.onLogout();
   }
 
   /**
@@ -47,6 +53,7 @@ export default class Http {
       if (!conf.headers) conf.headers = {};
       conf.headers['Accept'] = 'application/json';
       conf.headers['Content-Type'] = 'multipart/form-data';
+      
 
       return conf;
     }, (error) => {
@@ -80,15 +87,20 @@ export default class Http {
    * @param {object} data
    * @param {AxiosRequestConfig|undefined} config
    */
-  protected post<T extends Response>(responseType: ClassConstructor<T>, url: string, data: Params = {} as Params, config?: AxiosRequestConfig): Promise<T> {
-    return this.provider.post(url, ParamToFormData(data), config)
+  protected post<T extends Response>(responseType: ClassConstructor<T>, url: string, param: Params = {} as Params, config?: AxiosRequestConfig): Promise<T> {
+    return this.provider.post(url, ParamToFormData(param), config)
     .then((res: AxiosResponse<any>) => {
-      if (res.data) {
-        if (res.data.msg == 'success') {
-          return plainToClass(responseType, res.data);
+      if (res.data instanceof Array) {
+        return plainToClass(responseType, { datas: res.data });
+      } else if (res.data instanceof Object) {
+        if (res.data.msg == 'maaf anda harus login kembali') {
+          const exceptionUnauth = new UnauthErrorException(false, res.data.message || res.data.msg, res.data.error);
+          exceptionUnauth.showErrorAlert(this.logout.bind(this));
+          return Promise.reject(exceptionUnauth);
         }
-        return Promise.reject(ErrorException.create(res.data, res));
+        return plainToClass(responseType, res.data);
       }
+
       return Promise.reject(ErrorException.create({
         status: false,
         message: 'No data response',
@@ -100,9 +112,11 @@ export default class Http {
       if (error instanceof ErrorException) return Promise.reject(error);
 
       if (error.config && error.response && error.response.data) {
-        const exception = ErrorException.create(error.response.data, error);
-        if (exception instanceof UnauthErrorException) {
-          exception.showErrorAlert(this.onLogout);
+        let exception = ErrorException.create(error.response.data, error);
+        if (error.response.data.msg == 'maaf anda harus login kembali') {
+          const exceptionUnauth = new UnauthErrorException(false, error.response.data.message || error.response.data.msg, error.response.data.error, error);
+          exceptionUnauth.showErrorAlert(this.logout.bind(this));
+          exception = exceptionUnauth;
         }
         return Promise.reject(exception);
       }
@@ -127,12 +141,17 @@ export default class Http {
     if (config?.params) config.params = undefined;
     return this.provider.get(url, config)
     .then((res: AxiosResponse<any>) => {
-      if (res.data) {
-        if (res.data.msg == 'success') {
-          return plainToClass(responseType, res.data);
+      if (res.data instanceof Array) {
+        return plainToClass(responseType, { datas: res.data });
+      } else if (res.data instanceof Object) {
+        if (res.data.msg == 'maaf anda harus login kembali') {
+          const exceptionUnauth = new UnauthErrorException(false, res.data.message || res.data.msg, res.data.error);
+          exceptionUnauth.showErrorAlert(this.logout.bind(this));
+          return Promise.reject(exceptionUnauth);
         }
-        return Promise.reject(ErrorException.create(res.data, res));
+        return plainToClass(responseType, res.data);
       }
+      
       return Promise.reject(ErrorException.create({
         status: false,
         message: 'No data response',
@@ -144,9 +163,11 @@ export default class Http {
       if (error instanceof ErrorException) return Promise.reject(error);
 
       if (error.config && error.response && error.response.data) {
-        const exception = ErrorException.create(error.response.data, error);
-        if (exception instanceof UnauthErrorException) {
-          exception.showErrorAlert(this.onLogout);
+        let exception = ErrorException.create(error.response.data, error);
+        if (error.response.data.msg == 'maaf anda harus login kembali') {
+          const exceptionUnauth = new UnauthErrorException(false, error.response.data.message || error.response.data.msg, error.response.data.error, error);
+          exceptionUnauth.showErrorAlert(this.logout.bind(this));
+          exception = exceptionUnauth;
         }
         return Promise.reject(exception);
       }
@@ -164,14 +185,15 @@ export default class Http {
   /**
    * execute
    */
-  public execute<R extends Response, P extends Params>(request: Request<R, P>): Promise<R> {
-    const validation = request.data ? validate(request.data.constructor(), request.data) : true;
-    if (!validation) request.data = {} as P;
+  public async execute<R extends Response, P extends Params>(request: Request<R, P>): Promise<R> {
+    await request.setup();
+    // const validation = request.data ? validate(request.data.constructor(), request.data) : true;
+    // if (!validation) request.data = {} as P;
     if (request.method == HttpMethod.POST) {
-      return this.post(request.response, `${request.prefix}${request.url}`, request.data, request.config);
+      return await this.post(request.response, `${request.prefix}${request.url}`, request.data, request.config);
     } else {
       const params = request.data ? '?' + stringify(request.data, { arrayFormat: 'index' }) : '';
-      return this.get(request.response, `${request.prefix}${request.url}${params}`, request.config);
+      return await this.get(request.response, `${request.prefix}${request.url}${params}`, request.config);
     }
   }
 }
