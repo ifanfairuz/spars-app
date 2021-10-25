@@ -2,11 +2,13 @@ import React, { FC, useReducer } from 'react';
 import { createNativeStackNavigator, NativeStackNavigationOptions, NativeStackScreenProps } from '@react-navigation/native-stack';
 import HomePage from './HomePage';
 import PilihTeknisi from './PilihTeknisi';
-import DetailReport from './DetailReport';
+import DetailReportKeluhan from './DetailReportKeluhan';
 import PilihAlat from './PilihAlat';
 import TambahPenjadwalan from './TambahPenjadwalan';
+import DetailKeluhan from './DetailKeluhan';
 import keluhanReducer from '@store/keluhan';
 import { KeluhanKatimContextProvider } from '@context/keluhan/KeluhanKatimContext';
+import Keluhan from '@store/models/Keluhan';
 
 const UserNavigation = createNativeStackNavigator();
 
@@ -17,7 +19,7 @@ const screenOptions: Record<string, NativeStackNavigationOptions> = {
   PilihTeknisi: {
     headerShown: false
   },
-  DetailReport: {
+  DetailReportKeluhan: {
     headerShown: false
   },
   PilihAlat: {
@@ -25,15 +27,19 @@ const screenOptions: Record<string, NativeStackNavigationOptions> = {
   },
   TambahPenjadwalan: {
     headerShown: false
+  },
+  DetailKeluhan: {
+    headerShown: false
   }
 }
 
 type ParamList = {
   HomePage: undefined;
-  PilihTeknisi: undefined;
-  DetailReport: undefined;
+  PilihTeknisi: { data: Keluhan };
+  DetailReportKeluhan: undefined;
   PilihAlat: undefined;
   TambahPenjadwalan: undefined;
+  DetailKeluhan: { data: Keluhan };
 };
 
 export type KatimScreenProps<T extends keyof ParamList> = NativeStackScreenProps<ParamList, T>;
@@ -53,9 +59,9 @@ const KatimScreen: FC = () => {
           component={PilihTeknisi}
           options={screenOptions.PilihTeknisi} />
         <UserNavigation.Screen
-          name='DetailReport'
-          component={DetailReport}
-          options={screenOptions.DetailReport} />
+          name='DetailReportKeluhan'
+          component={DetailReportKeluhan}
+          options={screenOptions.DetailReportKeluhan} />
         <UserNavigation.Screen
           name='PilihAlat'
           component={PilihAlat}
@@ -64,6 +70,10 @@ const KatimScreen: FC = () => {
           name='TambahPenjadwalan'
           component={TambahPenjadwalan}
           options={screenOptions.TambahPenjadwalan} />
+        <UserNavigation.Screen
+          name='DetailKeluhan'
+          component={DetailKeluhan}
+          options={screenOptions.DetailKeluhan} />
       </UserNavigation.Navigator>
     </KeluhanKatimContextProvider>
   );

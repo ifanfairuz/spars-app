@@ -5,7 +5,7 @@ import { Logo, Input, GlassBg } from '@components';
 import AuthContext from '@context/AuthContext';
 
 const Login: FC = () => {
-  const [username, setUsername] = useState('budiman');
+  const [username, setUsername] = useState('fudin');
   const [password, setPassword] = useState('ded7a');
   const authContext = useContext(AuthContext);
   const login = () => authContext.login(username, password);
@@ -22,7 +22,7 @@ const Login: FC = () => {
           space={5}
           borderTopRadius={24}
           px={8} py={10}>
-          <Input placeholder='johndoe@mail.com' label='Username / Email' value={username} onChangeText={setUsername} />
+          <Input placeholder='johndoe' label='Username / Email' value={username} onChangeText={setUsername} />
           <Input placeholder='••••••••' label='Password' inputProps={{ type: 'password' }} value={password} onChangeText={setPassword} />
           <Pressable>
             <Text color='spars.orange'>Lupa Password ?</Text>

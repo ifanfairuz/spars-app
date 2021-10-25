@@ -1,22 +1,40 @@
 import React, { createContext, FC, useMemo } from "react";
 import { KeluhanAction, State, state } from '@store/keluhan';
 import { ContextProviderProps } from "@context/_type";
-import { getKeluhan, approveKeluhan } from "@actions/keluhan";
+import { getKeluhan, approveKeluhan, getTeknisi } from "@actions/keluhan";
 
 const KeluhanKatimContext = createContext({
   state,
+  init: async () => {},
   getKeluhan,
+  getTeknisi,
   approveKeluhan,
 });
 
 export const KeluhanKatimContextProvider: FC<ContextProviderProps<State, KeluhanAction>> = ({ dispatch, state, children }) => {
   const context = useMemo(() => ({
     state,
-    getKeluhan: async () => {
-      await getKeluhan();
+    init: async () => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const datas = await getKeluhan('', false, false);
+      dispatch({ type: 'SET_KELUHAN', payload: datas});
+      dispatch({ type: 'SET_LOADING', payload: false });
     },
-    approveKeluhan: async () => {
-      await approveKeluhan();
+    getKeluhan: async () => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const datas = await getKeluhan('', false, false);
+      dispatch({ type: 'SET_KELUHAN', payload: datas});
+      dispatch({ type: 'SET_LOADING', payload: false });
+      return datas;
+    },
+    getTeknisi: async () => {
+      return await getTeknisi();
+    },
+    approveKeluhan: async (id_keluhan: string, id_teknisi: string) => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const datas = await approveKeluhan(id_keluhan, id_teknisi);
+      dispatch({ type: 'SET_LOADING', payload: false });
+      return datas;
     },
   }), [state]);
 

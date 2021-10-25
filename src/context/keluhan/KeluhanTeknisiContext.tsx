@@ -13,10 +13,10 @@ export const KeluhanTeknisiContextProvider: FC<ContextProviderProps<State, Keluh
   const context = useMemo(() => ({
     state,
     getKeluhan: async () => {
-      await getKeluhan();
+      return await getKeluhan();
     },
     tanganiKeluhan: async () => {
-      await tanganiKeluhan();
+      return await tanganiKeluhan();
     },
   }), [state]);
 
