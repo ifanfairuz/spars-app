@@ -24,8 +24,6 @@ export async function getAlat(key?: string, page: number = 1, cancelable: boolea
 export async function tambahKeluhan(id_alat: string, insiden?: string, deskripsi_keluhan?: string, photos: string[] = []) {
   const request = new AddKeluhanRequest(id_alat, insiden, deskripsi_keluhan, photos);
   const response = await http.execute(request).catch(() => undefined);
-  console.log(response);
-  console.log(Array(100).map(() => '=============').join(''));
   return (response && response.response == 'success');
 }
 
