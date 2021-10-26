@@ -1,15 +1,17 @@
-import React, { FC, useContext, useEffect, useMemo } from 'react';
-import { VStack, Input, SearchIcon, Text, Box, FlatList, Pressable } from 'native-base';
+import React, { FC, useContext, useEffect } from 'react';
+import { VStack, Input, SearchIcon, Text, Box, FlatList, Pressable, HStack, CloseIcon } from 'native-base';
 import { ListRenderItem, RefreshControl } from 'react-native';
 import { GlassBg, KeluhanUser, ButtonScan } from '@components';
 import { UserScreenProps } from '.';
 import KeluhanUserContext from '@context/keluhan/KeluhanUserContext';
 import Keluhan from '@store/models/Keluhan';
+import AuthContext from '@context/AuthContext';
 
 export type ListKeluhanProps = UserScreenProps<'ListKeluhan'>;
 
 const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
   const keluhanContext = useContext(KeluhanUserContext);
+  const authContext = useContext(AuthContext);
 
   const goToTambahKeluhan = (code?: string) => navigation.navigate('TambahKeluhan', { code });
   const goToDetailKeluhan = (data: Keluhan) => navigation.navigate('DetailKeluhan', { data });
@@ -18,21 +20,6 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
       nav.replace('TambahKeluhan', { code: data });
     }
   });
-
-  const equals = (t1: string, t2: string) => t1.toLowerCase().includes(t2.toLowerCase()) || t2.toLowerCase().includes(t1.toLowerCase());
-
-  const keluhans = useMemo(() => {
-    let { datas, search } = keluhanContext.state;
-    if (search != '') datas = datas.filter(d => (
-      equals(d.nama_alat, search) ||
-      equals(d.nama_ruangan, search) ||
-      equals(d.respon_name, search) ||
-      equals(d.detail.deskripsi_keluhan, search) ||
-      equals(d.status, search) ||
-      equals(d.catatan_teknisi, search)
-    ));
-    return datas;
-  }, [keluhanContext.state.datas, keluhanContext.state.search]);
 
   useEffect(() => {
     const length = keluhanContext.state.datas?.length || 0;
@@ -50,8 +37,9 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
   const renderHeader = () => (
     <VStack bg='spars.green'>
       <GlassBg />
-      <Box p='5'>
+      <HStack p='5' space='xs'>
         <Input
+          flex='1'
           clearButtonMode='while-editing'
           defaultValue={keluhanContext.state.search}
           onSubmitEditing={e => keluhanContext.search(e.nativeEvent.text)}
@@ -70,7 +58,15 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
           autoCorrect={true}
           autoFocus={false}
           InputRightElement={<SearchIcon color='white' size='18px' mr='5' />} />
-      </Box>
+        <Pressable
+          px='3'
+          justifyContent='center'
+          bg='rgba(0,0,0,0.2)'
+          borderRadius='8'
+          onPress={authContext.logout}>
+          <CloseIcon size='xs' color='white' />
+        </Pressable>
+      </HStack>
       <Box px='5' py='5' bg='white' borderTopRadius='20'>
         <Text fontWeight='700' fontSize='lg'>Keluhan</Text>
       </Box>
@@ -85,7 +81,7 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
             refreshing={keluhanContext.state.loading}
             onRefresh={keluhanContext.getKeluhan} />
         }
-        data={keluhans}
+        data={keluhanContext.state.datas}
         keyExtractor={k => k.id_keluhan}
         keyboardShouldPersistTaps='always'
         keyboardDismissMode='on-drag'

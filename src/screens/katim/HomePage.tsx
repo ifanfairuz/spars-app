@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
-import { Box, HStack, Image, ScrollView, Select, Text, VStack, ChevronDownIcon, Stack, Pressable, ArrowForwardIcon, FlatList, Modal, Button, TextArea } from 'native-base';
+import { Box, HStack, Image, ScrollView, Select, Text, VStack, ChevronDownIcon, Stack, Pressable, ArrowForwardIcon, FlatList, Modal, Button, TextArea, CloseIcon } from 'native-base';
 import { GlassBg, KeluhanKatim } from '@components';
 import { Dimensions, ListRenderItem, RefreshControl } from 'react-native';
 import { gradient } from '@config/native-base';
@@ -9,6 +9,7 @@ import { imageProfile } from '@support/helpers/image';
 import KeluhanKatimContext from '@context/keluhan/KeluhanKatimContext';
 import Keluhan from '@store/models/Keluhan';
 import moment from 'moment';
+import { validatePersentase } from '@support/helpers/string';
 
 export type HomePageProps = KatimScreenProps<'HomePage'>;
 
@@ -30,7 +31,23 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
     setPrepareKeluhanDecline(undefined);
   }
 
+  const loading_refresh = useMemo(() => keluhanContext.state.loading, [keluhanContext.state.loading]);
+  const refresh = () => {
+    keluhanContext.init(date_filter);
+  }
+
+  const filterDashboard = (date: string) => {
+    setDateFilter(date);
+    keluhanContext.getDashboard(date);
+  }
+  
   const user = useMemo(() => authContext.state.user, [authContext]);
+  const dashboard = useMemo(() => keluhanContext.state.dashboard, [keluhanContext.state.dashboard]);
+  const keluhanBaru = useMemo(() => keluhanContext.state.datas /*.slice(0, 5)*/, [keluhanContext.state.datas]);
+
+  useEffect(() => {
+    if (keluhanContext.state.datas.length <= 0) refresh();
+  }, []);
 
   const renderKeluhan: ListRenderItem<Keluhan> = ({ item }) => {
     return (
@@ -41,18 +58,6 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
         onDecline={() => setPrepareKeluhanDecline(item)} />
     )
   }
-
-  const loading_refresh = useMemo(() => keluhanContext.state.loading, [keluhanContext.state.loading]);
-  const refresh = () => {
-    keluhanContext.init(date_filter);
-  }
-  
-  const dashboard = useMemo(() => keluhanContext.state.dashboard, [keluhanContext.state.dashboard]);
-  const keluhanBaru = useMemo(() => keluhanContext.state.datas /*.slice(0, 5)*/, [keluhanContext.state.datas]);
-
-  useEffect(() => {
-    if (keluhanContext.state.datas.length <= 0) refresh();
-  }, []);
   
   return (
     <VStack flex={1} bg='spars.green' position='relative'>
@@ -69,14 +74,23 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
           borderTopEndRadius: 20,
         }}>
         <VStack p='5' space='md' onLayout={e => setHeadHeight(e.nativeEvent.layout.height)}>
-          <HStack space='xs' alignItems='flex-start'>
-            <Box p='1' bg='white' borderRadius='100'>
-              <Image size='xs' borderRadius='100' src={imageProfile(user?.foto)} alt='profile' />
-            </Box>
-            <VStack>
-              <Text color='white' bold fontSize='lg'>{ user?.nama_rumah_sakit }</Text>
-              <Text color='white' fontSize='md'>{ user?.full_name }</Text>
-            </VStack>
+          <HStack justifyContent='space-between'>
+            <HStack space='xs' alignItems='center'>
+              <Box p='1' bg='white' borderRadius='100'>
+                <Image size='xs' borderRadius='100' src={imageProfile(user?.foto)} alt='profile' />
+              </Box>
+              <VStack>
+                <Text color='white' bold fontSize='lg' lineHeight='xs'>{ user?.nama_rumah_sakit }</Text>
+                <Text color='white' fontSize='md' lineHeight='xs'>{ user?.full_name }</Text>
+              </VStack>
+            </HStack>
+            <Pressable
+              px='3'
+              justifyContent='center'
+              borderRadius='8'
+              onPress={authContext.logout}>
+              <CloseIcon size='xs' color='white' />
+            </Pressable>
           </HStack>
           <HStack justifyContent='space-between' alignItems='center'>
             <Text bold color='white'>OVERVIEW</Text>
@@ -93,11 +107,11 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
               bg='spars.whitelight'
               color='white'
               selectedValue={date_filter}
-              onValueChange={setDateFilter}
+              onValueChange={t => filterDashboard(t)}
               dropdownIcon={<ChevronDownIcon size='6' color='white' mr='1' />}>
               { [0,1,2,3,4,5].map(i => {
                 const date = moment().subtract(i, 'months');
-                return <Select.Item label={date.format('MMMM')} value={date.format('MMYYYY')} />;
+                return <Select.Item label={date.format('MMMM YYYY')} value={date.format('MMYYYY')} />;
               }) }
             </Select>
           </HStack>
@@ -106,7 +120,7 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
             <Pressable onPress={goToReportKeluhan}>
               <HStack px='5' space='md'>
                 <VStack flex='1' space='xs'>
-                  <HStack justifyContent='space-between'>
+                  <HStack justifyContent='space-between' alignItems='baseline'>
                     <Text fontSize='md'>Pemeliharaan</Text>
                     <Text fontSize='sm' color='spars.grey' bold>16</Text>
                   </HStack>
@@ -126,18 +140,18 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
             <Pressable onPress={goToReportKeluhan}>
               <HStack px='5' space='md'>
                 <VStack flex='1' space='xs'>
-                  <HStack justifyContent='space-between'>
+                  <HStack justifyContent='space-between' alignItems='baseline'>
                     <Text fontSize='md'>Keluhan</Text>
                     <Text fontSize='sm' color='spars.grey' bold>{ dashboard?.keluhan?.kel_total }</Text>
                   </HStack>
                   <Box bg='spars.darkgrey' h='1' borderRadius='4'>
-                    <Box position='absolute' borderRadius='4' h='1' w={typeof dashboard.keluhan.persentase == 'number' ? `${dashboard?.keluhan?.persentase}%` : '0%'} bg='spars.blue' />
+                    <Box position='absolute' borderRadius='4' h='1' w={`${validatePersentase(dashboard?.keluhan?.persentase)}`} bg='spars.blue' />
                   </Box>
                   <Text fontSize='sm' color='spars.green2' bold>{ dashboard?.keluhan?.kel_selesai } Selesai</Text>
                 </VStack>
                 <Stack justifyContent='center'>
                   <Box w='50' h='50' bg={gradient.blue} borderRadius='8' justifyContent='center' alignItems='center'>
-                    <Text fontSize='sm' bold color='white'>{ dashboard?.keluhan?.persentase }%</Text>
+                    <Text fontSize='sm' bold color='white'>{ validatePersentase(dashboard?.keluhan?.persentase) }</Text>
                   </Box>
                 </Stack>
               </HStack>

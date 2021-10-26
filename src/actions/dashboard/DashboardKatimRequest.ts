@@ -1,5 +1,6 @@
 import { BaseParamsWithToken, BaseRequest, BaseResponse } from "@support/http";
 import { HttpMethod } from "@support/http/contract/Request";
+import { CancelToken } from "axios";
 
 export class DashboardKatimParam extends BaseParamsWithToken {
   act: string = 'sumReportKatim'
@@ -21,8 +22,8 @@ export class DashboardKatimResponse extends BaseResponse {
 
 export default class DashboardKatimRequest extends BaseRequest<DashboardKatimResponse, DashboardKatimParam> {
 
-  constructor(date: string) {
-    super(HttpMethod.POST, 'svr_dashboard.php', new DashboardKatimParam(date), DashboardKatimResponse);
+  constructor(date: string, cancelToken: CancelToken) {
+    super(HttpMethod.POST, 'svr_dashboard.php', new DashboardKatimParam(date), DashboardKatimResponse, { cancelToken });
   }
 
 }

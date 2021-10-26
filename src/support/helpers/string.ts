@@ -10,3 +10,8 @@ export function capitalize(str: string) {
 export function getOrDash(str?: string, max?: number) {
   return (!str || str.length <= 0) ? '-' : ( max && max > 0 ? ellipsis(str, max) : str );
 }
+
+export function validatePersentase(str?: string, defa: string = '0%') {
+  const search = str?.match(/\d+(?:\.\d+)?%/g);
+  return search?.shift() === str ? str : defa;
+}

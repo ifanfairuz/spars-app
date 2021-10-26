@@ -1,9 +1,10 @@
 import React, { FC, useState } from 'react';
-import { Box, Button, CloseIcon, HStack, Image, Modal, Pressable, Text, Toast, VStack } from 'native-base';
+import { Box, Button, SmallCloseIcon, HStack, Image, Modal, Pressable, Text, Toast, VStack } from 'native-base';
 import { Asset, CameraOptions, ImageLibraryOptions, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { IVStackProps } from 'native-base/lib/typescript/components/primitives/Stack/VStack';
 import CameraIcon from '@components/Icon/CameraIcon';
 import GalleryIcon from '@components/Icon/GalleryIcon';
+import { checkPermission } from '@support/helpers/functions';
 
 export interface TakePhotoProps extends IVStackProps {
   values: string[]
@@ -16,9 +17,15 @@ const TakePhoto: FC<TakePhotoProps> = ({ values, onAdd, onRemove, max, ...props 
   const [showModal, setShowModal] = useState(false)
   const max_length = max || 3;
 
-  const takePhoto = () => {
+  const takePhoto = async () => {
     if (values.length >= max_length) {
       Toast.show({ title: `Maksimal foto ${max_length}x`, status: 'error'  })
+      return;
+    }
+    const allow = await checkPermission('CAMERA');
+    if (!allow) {
+      Toast.show({ title: `Tidak bisa akses kamera`, status: 'error'  });
+      setShowModal(false);
       return;
     }
 
@@ -41,9 +48,15 @@ const TakePhoto: FC<TakePhotoProps> = ({ values, onAdd, onRemove, max, ...props 
     });
   };
 
-  const openGallery = () => {
+  const openGallery = async () => {
     if (values.length >= max_length) {
       Toast.show({ title: `Maksimal foto ${max_length}x`, status: 'error'  })
+      return;
+    }
+    const allow = await checkPermission('READ_EXTERNAL_STORAGE');
+    if (!allow) {
+      Toast.show({ title: `Tidak bisa akses galeri`, status: 'error'  });
+      setShowModal(false);
       return;
     }
 
@@ -138,7 +151,7 @@ const TakePhoto: FC<TakePhotoProps> = ({ values, onAdd, onRemove, max, ...props 
                 _pressed={{ bg: 'spars.darkgrey', opacity: 0.8 }}
                 size='lg'
                 justifyContent='flex-start'
-                leftIcon={<CloseIcon size='xs' mr='2' ml='1' color='black' />}
+                leftIcon={<SmallCloseIcon size='sm' mr='1' color='black' />}
                 onPress={() => setShowModal(false)}>
                 Batal
               </Button>

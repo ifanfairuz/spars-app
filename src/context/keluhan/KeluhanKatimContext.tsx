@@ -7,6 +7,7 @@ import { getKatimDashboard } from "@actions/dashboard";
 const KeluhanKatimContext = createContext({
   state,
   init: async (date: string) => {},
+  getDashboard: async (date: string) => {},
   getKeluhan,
   getTeknisi,
   approveKeluhan
@@ -21,6 +22,12 @@ export const KeluhanKatimContextProvider: FC<ContextProviderProps<State, Keluhan
       dispatch({ type: 'SET_DASHBOARD', payload: dashboard});
       const datas = await getKeluhan('', false, false);
       dispatch({ type: 'SET_KELUHAN', payload: datas});
+      dispatch({ type: 'SET_LOADING', payload: false });
+    },
+    getDashboard: async (date: string) => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const dashboard = await getKatimDashboard(date);
+      dispatch({ type: 'SET_DASHBOARD', payload: dashboard});
       dispatch({ type: 'SET_LOADING', payload: false });
     },
     getKeluhan: async () => {

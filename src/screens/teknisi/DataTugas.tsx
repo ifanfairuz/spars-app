@@ -1,14 +1,16 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
-import { HStack, Text, VStack, Pressable, ChevronRightIcon, Box, FlatList, Actionsheet, ScrollView, Select, ChevronDownIcon, Center } from 'native-base';
+import { HStack, Text, VStack, Pressable, ChevronRightIcon, Box, FlatList, Actionsheet, ScrollView, Select, ChevronDownIcon, Center, CloseIcon } from 'native-base';
 import { GlassBg, ReportCardTeknisiKorektif, ReportCardTeknisiPreventif } from '@components';
 import { ListRenderItem, RefreshControl } from 'react-native';
 import { TeknisiScreenProps } from '.';
 import KeluhanTeknisiContext from '@context/keluhan/KeluhanTeknisiContext';
 import Keluhan from '@store/models/Keluhan';
+import AuthContext from '@context/AuthContext';
 
 export type DataTugasProps = TeknisiScreenProps<'DataTugas'>;
 
 const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
+  const authContext = useContext(AuthContext);
   const keluhanContext = useContext(KeluhanTeknisiContext);
   const [riwayatOpen, setRiwayatOpen] = useState(false);
   const goToFormPemeliharaan = () => navigation.navigate('FormPemeliharaan');
@@ -94,24 +96,34 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
                 </Box>
                 <Text bold color='white' fontSize='16'>Data Tugas</Text>
               </Pressable>
-              <Select
-                ml='auto'
-                placeholder='Filter Tanggal'
-                placeholderTextColor='white'
-                accessibilityLabel='Filter Tanggal'
-                outlineStyle='none'
-                variant='unstyled'
-                maxW='150'
-                flex='1'
-                py='1' px='3'
-                borderWidth='0'
-                bg='spars.whitelight'
-                color='white'
-                dropdownIcon={<ChevronDownIcon size='6' color='white' mr='1' />}>
-                <Select.Item value='08 January' label='08 January' />
-                <Select.Item value='09 January' label='09 January' />
-                <Select.Item value='10 January' label='10 January' />
-              </Select>
+              <HStack flex='1' space='xs'>
+                <Select
+                  ml='auto'
+                  placeholder='Filter Tanggal'
+                  placeholderTextColor='white'
+                  accessibilityLabel='Filter Tanggal'
+                  outlineStyle='none'
+                  variant='unstyled'
+                  maxW='150'
+                  flex='1'
+                  py='1' px='3'
+                  borderWidth='0'
+                  bg='spars.whitelight'
+                  color='white'
+                  dropdownIcon={<ChevronDownIcon size='6' color='white' mr='1' />}>
+                  <Select.Item value='08 January' label='08 January' />
+                  <Select.Item value='09 January' label='09 January' />
+                  <Select.Item value='10 January' label='10 January' />
+                </Select>
+                <Pressable
+                  px='3'
+                  justifyContent='center'
+                  bg='spars.whitelight'
+                  borderRadius='8'
+                  onPress={authContext.logout}>
+                  <CloseIcon size='xs' color='white' />
+                </Pressable>
+              </HStack>
             </HStack>
             <Box h='8' bg='white' borderTopRadius='20' />
           </VStack>
@@ -120,12 +132,18 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
       <Actionsheet isOpen={riwayatOpen} onClose={() => setRiwayatOpen(false)}>
         <Actionsheet.Content>
           <ScrollView width="100%">
-            {[1,2,3,4,5].map(r => (
-              <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
-                <Text color='spars.grey' fontSize='16'>Keluhan</Text>
-                <Text bold>10 - 11 - 2021</Text>
-              </HStack>
-            ))}
+            <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
+              <Text color='spars.grey' fontSize='16'>Proses</Text>
+              <Text bold>10 - 11 - 2021</Text>
+            </HStack>
+            <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
+              <Text color='spars.grey' fontSize='16'>Approval</Text>
+              <Text bold>11 - 11 - 2021</Text>
+            </HStack>
+            <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
+              <Text color='spars.grey' fontSize='16'>Selesai</Text>
+              <Text bold>12 - 11 - 2021</Text>
+            </HStack>
           </ScrollView>
         </Actionsheet.Content>
       </Actionsheet>

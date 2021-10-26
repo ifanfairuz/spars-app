@@ -11,14 +11,20 @@ let cancelTokenSearch: Canceler|undefined;
 let cancelTokenAlatSearch: Canceler|undefined;
 
 export async function getKeluhan(filter: string = '', cancelable: boolean = true, only_me: boolean = true) {
-  if (cancelable && cancelTokenSearch) cancelTokenSearch();
+  if (cancelable && cancelTokenSearch) {
+    cancelTokenSearch();
+    cancelTokenSearch = undefined;
+  }
   const request = new GetKeluhanRequest(filter, only_me, cancelable ? new axios.CancelToken(c => cancelTokenSearch = c) : undefined);
   const response = await http.execute(request).catch(() => undefined);
   return response ? response.datas : [];
 }
 
 export async function getAlat(key?: string, page: number = 1, cancelable: boolean = false) {
-  if (cancelable && cancelTokenAlatSearch) cancelTokenAlatSearch();
+  if (cancelable && cancelTokenAlatSearch) {
+    cancelTokenAlatSearch();
+    cancelTokenAlatSearch = undefined;
+  }
   const request = new GetAlatRequest(key, page, cancelable ? new axios.CancelToken(c => cancelTokenAlatSearch = c) : undefined);
   const response = await http.execute(request).catch(() => new GetAlatResponse());
   return response;

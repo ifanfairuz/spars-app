@@ -220,12 +220,18 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
       <Actionsheet isOpen={riwayatOpen} onClose={() => setRiwayatOpen(false)}>
         <Actionsheet.Content>
           <ScrollView width="100%">
-            {[1,2,3,4,5].map(r => (
-              <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
-                <Text color='spars.grey' fontSize='16'>Keluhan</Text>
-                <Text bold>10 - 11 - 2021</Text>
-              </HStack>
-            ))}
+            <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
+              <Text color='spars.grey' fontSize='16'>Proses</Text>
+              <Text bold>10 - 11 - 2021</Text>
+            </HStack>
+            <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
+              <Text color='spars.grey' fontSize='16'>Approval</Text>
+              <Text bold>11 - 11 - 2021</Text>
+            </HStack>
+            <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
+              <Text color='spars.grey' fontSize='16'>Selesai</Text>
+              <Text bold>12 - 11 - 2021</Text>
+            </HStack>
           </ScrollView>
         </Actionsheet.Content>
       </Actionsheet>
