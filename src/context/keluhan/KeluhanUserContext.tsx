@@ -22,8 +22,8 @@ export const KeluhanUserContextProvider: FC<ContextProviderProps<State, KeluhanA
       dispatch({ type: 'SET_LOADING', payload: false });
       return datas;
     },
-    tambahKeluhan: async (id_alat: string, insiden?: string, deskripsi_keluhan?: string, photos: string[] = []) => {
-      return await tambahKeluhan(id_alat, insiden, deskripsi_keluhan, photos);
+    tambahKeluhan: async (id_alat: string, no_seri: string, insiden?: string, deskripsi_keluhan?: string, photos: string[] = []) => {
+      return await tambahKeluhan(id_alat, no_seri, insiden, deskripsi_keluhan, photos);
     },
     getAlat: async (key: string = '', page: number = 1, cancelable: boolean = false) => {
       return await getAlat(key, page, cancelable);

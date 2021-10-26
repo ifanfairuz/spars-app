@@ -1,8 +1,12 @@
 export default interface Keluhan {
   id_keluhan: string,
   tgl_masuk: string,
+  tgl_keluhan: string,
   insiden: string,
   nama_ruangan: string,
+  foto_teknisi: string,
+  id_teknisi: string,
+  foto_user: string,
   nama_alat: string,
   no_seri: string,
   respon_name: string,

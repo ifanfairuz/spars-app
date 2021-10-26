@@ -1,4 +1,5 @@
 import Keluhan from '@store/models/Keluhan';
+import { imageProfile } from '@support/helpers/image';
 import { getOrDash } from '@support/helpers/string';
 import { Box, Center, HStack, Image, Text, VStack } from 'native-base';
 import React, { FC } from 'react';
@@ -23,7 +24,7 @@ const ReportCard: FC<{ data: Keluhan }> = ({ data }) => {
         <Text>Kerusakan</Text>
         <Text color='spars.grey'>{ getOrDash(data.detail.deskripsi_keluhan) }</Text>
       </VStack>
-      <Center
+      {!!data.catatan_teknisi && <Center
         p='4'
         borderWidth='1'
         borderStyle='dashed'
@@ -32,10 +33,10 @@ const ReportCard: FC<{ data: Keluhan }> = ({ data }) => {
         bg='spars.lightgrey'
         _text={{ color: 'spars.orange', fontSize: 'md' }}>
         { data.catatan_teknisi }
-      </Center>
+      </Center>}
       <HStack space='sm' justifyContent='flex-start' alignItems='center'>
         <Box bg='white' borderRadius='100'>
-          <Image size='xs' borderRadius='100' source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwOFeX66lJg9GvAuptHMqmITaKozykBVDAqFdLvOnrzU3ZUz36U9w8e1a6sxJWclaosmU&usqp=CAU' }} alt='profile' />
+          <Image size='xs' borderRadius='100' src={imageProfile(data.foto_teknisi)} alt='profile' />
         </Box>
         <VStack>
           <Text color='spars.green' bold>{ data.nama_user }</Text>

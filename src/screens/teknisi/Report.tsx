@@ -48,7 +48,7 @@ const ReportItem: FC<ReportItemProps> = ({ variant, color, _text, label, count, 
   )
 }
 
-type DataReport = { total: number, selesai: number, belumselesai: number, selesaisyarat: number, belumtangani: number, moving: number }
+type DataReport = { total: number, proses: number, approval: number, selesai: number }
 interface ReportComponentProps {
   boxColor?: ResponsiveValue<IColors | (string & {}) | ILinearGradientProps>;
   color?: ResponsiveValue<IColors | (string & {}) | ILinearGradientProps>;
@@ -62,10 +62,8 @@ const ReportComponent: FC<ReportComponentProps> = ({ label, color, boxColor, dat
     <VStack p='4' borderWidth='1' borderColor='spars.darkgrey' borderRadius='8'>
       <ReportItem variant='filled' color={boxColor} label={label} count={data?.total || 0} _text={{ bold: true }} />
       <ReportItem variant='outline' color={mainColor} label='Selesai' count={data?.selesai || 0} />
-      <ReportItem variant='outline' color={mainColor} label='Belum Selesai' count={data?.belumselesai || 0} />
-      <ReportItem variant='outline' color={mainColor} label='Selesai Dengan Syarat / Sparepart' count={data?.selesaisyarat || 0} />
-      <ReportItem variant='outline' color={mainColor} label='Belum ditangani' count={data?.belumtangani || 0} />
-      <ReportItem variant='outline' color={mainColor} borderBottomWidth='0' label='Moving' count={data?.moving || 0} />
+      <ReportItem variant='outline' color={mainColor} label='Proses' count={data?.proses || 0} />
+      <ReportItem variant='outline' color={mainColor} label='Approval' count={data?.approval || 0} />
     </VStack>
   );
 }
@@ -87,10 +85,8 @@ const Report: FC<ReportProps> = ({ navigation }) => {
     const keluhan: DataReport = {
       total: keluhanContext.state.datas.length || 0,
       selesai: keluhanContext.state.datas.filter(d => d.status === 'Selesai').length || 0,
-      belumselesai: keluhanContext.state.datas.filter(d => d.status === 'Belum Selesai').length || 0,
-      selesaisyarat: keluhanContext.state.datas.filter(d => d.status === 'Selesai Dengan Syarat / Sparepart').length || 0,
-      belumtangani: keluhanContext.state.datas.filter(d => d.status === 'Belum ditangani').length || 0,
-      moving: keluhanContext.state.datas.filter(d => d.status === 'Moving').length || 0,
+      proses: keluhanContext.state.datas.filter(d => d.status === 'Proses').length || 0,
+      approval: keluhanContext.state.datas.filter(d => d.status === 'Approval').length || 0
     }
     return {
       keluhan

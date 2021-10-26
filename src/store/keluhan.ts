@@ -1,13 +1,28 @@
 import { Action } from "@store/_type";
 import Keluhan from "./models/Keluhan";
 
+export type Dashboard = {
+  keluhan: {
+    kel_total: string,
+    kel_selesai: string,
+    persentase: string
+  }
+};
 export type State = {
   datas: Array<Keluhan>,
   loading: boolean,
+  dashboard: Dashboard,
   search: string
 };
 export const state: State = {
   datas: [],
+  dashboard: {
+    keluhan: {
+      kel_total: '0',
+      kel_selesai: '0',
+      persentase: '0%'
+    }
+  },
   loading: false,
   search: ''
 }
@@ -18,6 +33,7 @@ export type KeluhanAction =  Action<'SET_KELUHAN', typeof state.datas> |
                           Action<'EDIT_KELUHAN', { index: number, data: Keluhan }> |
                           Action<'REMOVE_KELUHAN', number> |
                           Action<'SET_LOADING', boolean> |
+                          Action<'SET_DASHBOARD', Dashboard> |
                           Action<'SET_SEARCH', string>
 
 export const actions = (state: State, action: KeluhanAction) => {
@@ -50,6 +66,11 @@ export const actions = (state: State, action: KeluhanAction) => {
       return {
         ...state,
         datas: [...datas]
+      }
+    case 'SET_DASHBOARD':
+      return {
+        ...state,
+        dashboard: action.payload
       }
     case 'SET_LOADING':
       return {

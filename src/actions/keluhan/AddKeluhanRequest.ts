@@ -5,6 +5,7 @@ import moment from "moment";
 export class AddKeluhanParam extends BaseParamsWithToken {
   act: string = 'addKeluhan'
   id_alat: string
+  no_seri: string
   deskripsi_keluhan: string = ''
   tgl_keluhan: string
   jam: string
@@ -13,10 +14,11 @@ export class AddKeluhanParam extends BaseParamsWithToken {
   foto_2?: string
   foto_3?: string
 
-  constructor(id_alat: string, insiden?: string, deskripsi_keluhan?: string, photos: string[] = []) {
+  constructor(id_alat: string, no_seri: string, insiden?: string, deskripsi_keluhan?: string, photos: string[] = []) {
     super();
     const date = moment();
     this.id_alat = id_alat;
+    this.no_seri = no_seri;
     this.insiden = insiden || '';
     this.deskripsi_keluhan = deskripsi_keluhan || '';
     this.foto_1 = photos.length > 0 ? photos[0] : '';
@@ -34,8 +36,8 @@ export class AddKeluhanResponse extends BaseResponse {
 
 export default class AddKeluhanRequest extends BaseRequest<AddKeluhanResponse, AddKeluhanParam> {
 
-  constructor(id_alat: string, insiden?: string, deskripsi_keluhan?: string, photos: string[] = []) {
-    super(HttpMethod.POST, 'svr_keluhan.php', new AddKeluhanParam(id_alat, insiden, deskripsi_keluhan, photos), AddKeluhanResponse);
+  constructor(id_alat: string, no_seri: string, insiden?: string, deskripsi_keluhan?: string, photos: string[] = []) {
+    super(HttpMethod.POST, 'svr_keluhan.php', new AddKeluhanParam(id_alat, no_seri, insiden, deskripsi_keluhan, photos), AddKeluhanResponse);
   }
 
 }

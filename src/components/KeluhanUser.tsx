@@ -35,7 +35,7 @@ const KeluhanUser: FC<KeluhanUserProps> = ({ onPress, data, index, ...props }) =
         <HStack px='5' py='5' justifyContent='space-between' alignItems='flex-start' bg='spars.bluelight'>
           <VStack>
             <Text>{ getOrDash(data.respon_name) }</Text>
-            <Text color='spars.grey'>Teknisi</Text>
+            <Text color='spars.grey'>{ data.respon_name ? 'Teknisi' : '-' }</Text>
           </VStack>
           <Text ml='auto' color={status_color} fontWeight='700'>{ data.status }</Text>
         </HStack>

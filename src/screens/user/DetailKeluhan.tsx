@@ -1,11 +1,11 @@
-import React, { FC, useContext, useMemo, useState } from 'react';
+import React, { FC, Fragment, useContext, useMemo, useState } from 'react';
 import { Dimensions, ListRenderItem, RefreshControl } from 'react-native';
 import { VStack, Text, Box, TextArea, HStack, Image, ArrowBackIcon, Pressable, ScrollView } from 'native-base';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { GlassBg, Label } from '@components';
 import { UserScreenProps } from '.';
 import { getOrDash } from '@support/helpers/string';
-import { imageKeluhan, imagePenanganan } from '@support/helpers/image';
+import { imageKeluhan, imagePenanganan, imageProfile } from '@support/helpers/image';
 import KeluhanUserContext from '@context/keluhan/KeluhanUserContext';
 
 export type DetailKeluhanProps = UserScreenProps<'DetailKeluhan'>;
@@ -117,19 +117,22 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
             </VStack>
           }
 
-          <HStack borderWidth='1' borderColor='spars.darkgrey' borderStyle='dashed' py='2' px='3' space='xs' alignItems='center' my='4'>
-            <Image size='sm' borderRadius='100' source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwOFeX66lJg9GvAuptHMqmITaKozykBVDAqFdLvOnrzU3ZUz36U9w8e1a6sxJWclaosmU&usqp=CAU' }} alt='profile' />
-            <VStack>
-              <Text fontWeight='700'>{ getOrDash(data.respon_name) }</Text>
-              <Text fontWeight='400'>Teknisi</Text>
-            </VStack>
-          </HStack>
-
-          <VStack space='sm' mb='5'>
-            <Text fontWeight='700'>Catatan Teknisi</Text>
-            <TextArea h={20} fontWeight='normal' placeholder='-' textAlignVertical='top' isDisabled value={data.catatan_teknisi} />
-          </VStack>
-
+          {!!data.id_teknisi && (
+            <Fragment>
+              <HStack borderWidth='1' borderColor='spars.darkgrey' borderStyle='dashed' py='2' px='3' space='xs' alignItems='center' my='4'>
+                <Image size='sm' borderRadius='100' src={imageProfile(data.foto_teknisi)} alt='profile' />
+                <VStack>
+                  <Text fontWeight='700'>{ getOrDash(data.respon_name) }</Text>
+                  <Text fontWeight='400'>Teknisi</Text>
+                </VStack>
+              </HStack>
+              <VStack space='sm' mb='5'>
+                <Text fontWeight='700'>Catatan Teknisi</Text>
+                <TextArea h={20} fontWeight='normal' placeholder='-' textAlignVertical='top' isDisabled value={data.catatan_teknisi} />
+              </VStack>
+            </Fragment>
+          )}
+          
           {
             data.foto_penanganan.length > 0 &&
             <VStack space='sm'>

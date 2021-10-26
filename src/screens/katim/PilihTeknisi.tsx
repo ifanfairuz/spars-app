@@ -1,7 +1,7 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
-import { HStack, ScrollView, Text, VStack, Pressable, ArrowBackIcon, Box, Button, Radio, Toast } from 'native-base';
+import { HStack, ScrollView, Text, VStack, Pressable, ArrowBackIcon, Box, Button, Radio, Toast, Modal, TextArea } from 'native-base';
 import { GlassBg, Loader } from '@components';
-import { Dimensions, RefreshControl } from 'react-native';
+import { Dimensions, Keyboard, RefreshControl } from 'react-native';
 import { KatimScreenProps } from '.';
 import KeluhanKatimContext from '@context/keluhan/KeluhanKatimContext';
 import Teknisi from '@store/models/Teknisi';
@@ -18,6 +18,8 @@ const PilihTeknisi: FC<PilihTeknisiProps> = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [datas, setDatas] = useState<Teknisi[]>([]);
   const [teknisi, setTeknisi] = useState('');
+  const [memo, setMemo] = useState('');
+  const [open_memo, setOpenMemo] = useState(false);
   const refresh = () => {
     setLoading(true);
     keluhanContext.getTeknisi()
@@ -30,11 +32,19 @@ const PilihTeknisi: FC<PilihTeknisiProps> = ({ navigation, route }) => {
       Toast.show({ title: 'Pilih teknisi terlebih dahulu', status: 'error', placement: 'top' });
       return;
     }
-    keluhanContext.approveKeluhan(data.id_keluhan, teknisi)
+    if (memo == '') {
+      setMemo('');
+      setOpenMemo(true);
+      return;
+    }
+
+    Keyboard.dismiss();
+    setOpenMemo(false);
+
+    keluhanContext.approveKeluhan(data.id_keluhan, teknisi, memo)
     .then(success => {
       if (success) {
         goToMain();
-        keluhanContext.getKeluhan();
       }
     })
   }
@@ -88,6 +98,33 @@ const PilihTeknisi: FC<PilihTeknisiProps> = ({ navigation, route }) => {
             Pilih Teknisi
         </Button>
       </Box>
+      <Modal
+        isOpen={!!open_memo}
+        onClose={() => setOpenMemo(false)}
+        avoidKeyboard
+        justifyContent="flex-end"
+        bottom="4"
+        size="lg">
+        <Modal.Content style={{ marginTop: '10%', marginBottom: 'auto' }}>
+          <Modal.CloseButton />
+          <Modal.Header>Memo untuk Teknisi</Modal.Header>
+          <Modal.Body>
+            <TextArea h={40} _focus={{ borderColor: 'spars.grey' }} placeholder='Memo untuk Teknisi' textAlignVertical='top' value={memo} onChangeText={setMemo} />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              flex='1' 
+              isDisabled={keluhanContext.state.loading}
+              size='lg'
+              bg='spars.orange'
+              _text={{ color: 'white' }} shadow='9.orange'
+              _pressed={{ bg: 'spars.orange', opacity: 0.8 }}
+              onPress={submit}>
+              Approve
+            </Button>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
       <Loader show={keluhanContext.state.loading} />
     </VStack>
   );

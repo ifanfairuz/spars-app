@@ -7,7 +7,7 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import moment from 'moment';
 import KeluhanTeknisiContext from '@context/keluhan/KeluhanTeknisiContext';
 import { Asset } from 'react-native-image-picker';
-import { imageAssetToBase64Uri } from '@support/helpers/image';
+import { imageKeluhan, imageProfile } from '@support/helpers/image';
 
 export type DetailKeluhanProps = TeknisiScreenProps<'DetailKeluhan'>;
 
@@ -22,7 +22,7 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const images_list = useMemo(() => images.map(i => i.uri || ''), [images]);
   const goBack = () => navigation.canGoBack() && navigation.goBack();
-  const goToMain = () => navigation.replace('Report');
+  const goToMain = () => navigation.popToTop();
   
   const data = useMemo(() => {
     const { data } = route.params;
@@ -62,7 +62,7 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
   
   const renderCarouselItem: ListRenderItem<string[]> = ({ item }) => {
     return (
-      <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={item[0]} alt='image' style={{ width: '100%' }} />
+      <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={imageKeluhan(item[0])} alt='image' style={{ width: '100%' }} />
     );
   }
   
@@ -94,7 +94,7 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
         <VStack space='md' py='6' bg='white' borderTopRadius='20' minH={Dimensions.get('window').height - head_height}>
           <HStack px='6' space='sm' justifyContent='flex-start' alignItems='center'>
             <Box bg='white' borderRadius='100'>
-              <Image size='xs' borderRadius='100' source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwOFeX66lJg9GvAuptHMqmITaKozykBVDAqFdLvOnrzU3ZUz36U9w8e1a6sxJWclaosmU&usqp=CAU' }} alt='profile' />
+              <Image size='xs' borderRadius='100' src={imageProfile(data.foto_user)} alt='profile' />
             </Box>
             <VStack>
               <Text color='spars.green' bold>{ data.nama_user }</Text>
@@ -142,7 +142,7 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
           </VStack>
           <VStack px='6' space='xs'>
             <HStack alignItems='flex-start' justifyContent='space-between'>
-              <VStack>
+              <VStack flex='1'>
                 <Text fontSize='md' bold>{ data.nama_alat }</Text>
                 <Text color='spars.grey' fontWeight='light'>{ data.no_seri }</Text>
                 <Text color='spars.grey' bold>{ data.nama_ruangan }</Text>

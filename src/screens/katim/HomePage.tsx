@@ -8,6 +8,7 @@ import AuthContext from '@context/AuthContext';
 import { imageProfile } from '@support/helpers/image';
 import KeluhanKatimContext from '@context/keluhan/KeluhanKatimContext';
 import Keluhan from '@store/models/Keluhan';
+import moment from 'moment';
 
 export type HomePageProps = KatimScreenProps<'HomePage'>;
 
@@ -15,6 +16,7 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
   const authContext = useContext(AuthContext);
   const keluhanContext = useContext(KeluhanKatimContext);
   const [head_height, setHeadHeight] = useState(0);
+  const [date_filter, setDateFilter] = useState(moment().format('MMYYYY'));
   const goToTerima = (data: Keluhan) => navigation.navigate('PilihTeknisi', { data });
   const goToTambahJadwal = () => navigation.navigate('TambahPenjadwalan');
   const goToReportKeluhan = () => navigation.navigate('DetailReportKeluhan');
@@ -42,21 +44,10 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
 
   const loading_refresh = useMemo(() => keluhanContext.state.loading, [keluhanContext.state.loading]);
   const refresh = () => {
-    keluhanContext.init();
+    keluhanContext.init(date_filter);
   }
   
-  const dashboard = useMemo(() => {
-    const keluhan = {
-      total: keluhanContext.state.datas.length || 0,
-      selesai: keluhanContext.state.datas.filter(d => d.status === 'Selesai').length || 0,
-    }
-    return {
-      keluhan: {
-        ...keluhan,
-        prosentase: Math.round(keluhan.selesai/keluhan.total)
-      }
-    }
-  }, [keluhanContext.state.datas]);
+  const dashboard = useMemo(() => keluhanContext.state.dashboard, [keluhanContext.state.dashboard]);
   const keluhanBaru = useMemo(() => keluhanContext.state.datas /*.slice(0, 5)*/, [keluhanContext.state.datas]);
 
   useEffect(() => {
@@ -80,7 +71,7 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
         <VStack p='5' space='md' onLayout={e => setHeadHeight(e.nativeEvent.layout.height)}>
           <HStack space='xs' alignItems='flex-start'>
             <Box p='1' bg='white' borderRadius='100'>
-              <Image size='xs' borderRadius='100' source={{ uri: imageProfile(user?.foto) }} alt='profile' />
+              <Image size='xs' borderRadius='100' src={imageProfile(user?.foto)} alt='profile' />
             </Box>
             <VStack>
               <Text color='white' bold fontSize='lg'>{ user?.nama_rumah_sakit }</Text>
@@ -101,10 +92,13 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
               borderWidth='0'
               bg='spars.whitelight'
               color='white'
+              selectedValue={date_filter}
+              onValueChange={setDateFilter}
               dropdownIcon={<ChevronDownIcon size='6' color='white' mr='1' />}>
-              <Select.Item value='08 January' label='08 January' />
-              <Select.Item value='09 January' label='09 January' />
-              <Select.Item value='10 January' label='10 January' />
+              { [0,1,2,3,4,5].map(i => {
+                const date = moment().subtract(i, 'months');
+                return <Select.Item label={date.format('MMMM')} value={date.format('MMYYYY')} />;
+              }) }
             </Select>
           </HStack>
           <VStack py='5' bg='white' borderRadius='8'>
@@ -134,16 +128,16 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
                 <VStack flex='1' space='xs'>
                   <HStack justifyContent='space-between'>
                     <Text fontSize='md'>Keluhan</Text>
-                    <Text fontSize='sm' color='spars.grey' bold>{ dashboard.keluhan.total }</Text>
+                    <Text fontSize='sm' color='spars.grey' bold>{ dashboard?.keluhan?.kel_total }</Text>
                   </HStack>
                   <Box bg='spars.darkgrey' h='1' borderRadius='4'>
-                    <Box position='absolute' borderRadius='4' h='1' w={`${dashboard.keluhan.prosentase}%`} bg='spars.blue' />
+                    <Box position='absolute' borderRadius='4' h='1' w={typeof dashboard.keluhan.persentase == 'number' ? `${dashboard?.keluhan?.persentase}%` : '0%'} bg='spars.blue' />
                   </Box>
-                  <Text fontSize='sm' color='spars.green2' bold>{ dashboard.keluhan.selesai } Selesai</Text>
+                  <Text fontSize='sm' color='spars.green2' bold>{ dashboard?.keluhan?.kel_selesai } Selesai</Text>
                 </VStack>
                 <Stack justifyContent='center'>
                   <Box w='50' h='50' bg={gradient.blue} borderRadius='8' justifyContent='center' alignItems='center'>
-                    <Text fontSize='sm' bold color='white'>{ dashboard.keluhan.prosentase }%</Text>
+                    <Text fontSize='sm' bold color='white'>{ dashboard?.keluhan?.persentase }%</Text>
                   </Box>
                 </Stack>
               </HStack>

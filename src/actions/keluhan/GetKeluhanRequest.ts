@@ -11,7 +11,7 @@ export class GetKeluhanParam extends BaseParamsWithToken {
   constructor(filter: { only_me: boolean, search: string } = { only_me: true, search: '' }) {
     super();
     this.show_all = !filter.only_me;
-    this.key = filter.search != '' ? filter.search : undefined;
+    this.key = filter.search != '' ? filter.search : '';
   }
 }
 

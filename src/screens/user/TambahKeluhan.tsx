@@ -58,11 +58,10 @@ const TambahKeluhan: FC<TambahKeluhanProps> = ({ navigation, route }) => {
   const submit = () => {
     if (!alat) return;
     setLoading(true);
-    const photos = images.map(i => imageAssetToBase64Uri(i));
-    keluhanContext.tambahKeluhan(alat.id_alat, insiden, deskripsi, photos)
+    const photos = images.map(i => i.base64 || '');
+    keluhanContext.tambahKeluhan(alat.id_alat, alat.no_seri, insiden, deskripsi, photos)
     .then(success => {
       success && goToMain();
-      keluhanContext.getKeluhan();
     })
     .finally(() => setLoading(false));
   }

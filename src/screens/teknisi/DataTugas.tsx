@@ -12,6 +12,7 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
   const keluhanContext = useContext(KeluhanTeknisiContext);
   const [riwayatOpen, setRiwayatOpen] = useState(false);
   const goToFormPemeliharaan = () => navigation.navigate('FormPemeliharaan');
+  const goToReport = () => navigation.navigate('Report');
   const goToFormKeluhan = (data: Keluhan) => navigation.navigate('DetailKeluhan', { data });
 
   const loading_refresh = useMemo(() => keluhanContext.state.loading, [keluhanContext.state.loading]);
@@ -38,7 +39,7 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
         borderBottomWidth={isPreventif ? '0' : '1'}
         borderColor='spars.darkgrey'>
         <HStack justifyContent='space-between' alignItems='center'>
-          <Text bold fontSize='xs' color='spars.grey'>{ item.tgl_masuk.toUpperCase() }</Text>
+          <Text bold fontSize='xs' color='spars.grey'>{ item.tgl_masuk?.toUpperCase() }</Text>
           <Center
             bg={isPreventif ? 'spars.blue' : 'spars.green'}
             p='1' px='4'
@@ -57,7 +58,7 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
         ) }
         { !isPreventif && (
           <HStack justifyContent='space-between'>
-            <Text bold color='spars.green'>{ item.status.toUpperCase() }</Text>
+            <Text bold color='spars.green'>{ item.status?.toUpperCase() }</Text>
             <Pressable flexDirection='row' onPress={() => setRiwayatOpen(true)}>
               <Text bold>Lihat Riwayat</Text>
               <ChevronRightIcon size='sm' />
@@ -87,10 +88,12 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
           <VStack bg='spars.green'>
             <GlassBg />
             <HStack space='md' p='6' justifyContent='flex-start' alignItems='center'>
-              <Box>
-                <ChevronRightIcon size='md' color='white' />
-              </Box>
-              <Text bold color='white' fontSize='16'>Data Tugas</Text>
+              <Pressable onPress={goToReport} flexDir='row' justifyContent='flex-start' alignItems='center'>
+                <Box>
+                  <ChevronRightIcon size='md' color='white' />
+                </Box>
+                <Text bold color='white' fontSize='16'>Data Tugas</Text>
+              </Pressable>
               <Select
                 ml='auto'
                 placeholder='Filter Tanggal'
