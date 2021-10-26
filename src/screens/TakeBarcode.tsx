@@ -1,8 +1,9 @@
 import React, { FC, PropsWithChildren, PureComponent } from 'react';
 import { Box, Pressable, VStack, ArrowBackIcon, Text, Toast } from 'native-base';
 import { RNCamera, BarCodeReadEvent } from 'react-native-camera';
-import { StyleSheet, ActivityIndicator, PermissionsAndroid } from 'react-native';
+import { StyleSheet, ActivityIndicator } from 'react-native';
 import BarcodeMask from 'react-native-barcode-mask';
+import { checkPermission } from '@support/helpers/functions';
 
 const PendingView: FC<PropsWithChildren<{}>> = ({ children }) => (
   <Box flex='1' bg='spars.lightgrey' width='100%' justifyContent='center' alignItems='center'>
@@ -28,17 +29,9 @@ class TakeBarcode extends PureComponent<TakeBarcodeProps, { hasCameraPermission:
     this.checkPermission();
   }
 
-  checkPermission() {
-    return PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS['CAMERA'])
-    .then(allow => {
-      this.setState({ hasCameraPermission: !!allow });
-      if (!allow) {
-        PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS['CAMERA'])
-        .then(allow => {
-          this.setState({ hasCameraPermission: !!allow });
-        })
-      }
-    });
+  async checkPermission() {
+    const camera_allow = await checkPermission('CAMERA');
+    this.setState({ hasCameraPermission: camera_allow });
   }
 
   onBarCodeRead(e: BarCodeReadEvent) {

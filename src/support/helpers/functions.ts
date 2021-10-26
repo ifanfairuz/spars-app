@@ -14,7 +14,16 @@ export const checkPermission = async (permission: string) => {
   const allow = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS[permission]);
   if (!allow) {
     const user_choice = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS[permission]);
-    return user_choice == 'granted';
+    switch (user_choice) {
+      case PermissionsAndroid.RESULTS.GRANTED:
+        return true;
+      case PermissionsAndroid.RESULTS.DENIED:
+        return false;
+      case PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN:
+        return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS[permission]);;
+      default:
+        return false;
+    }
   }
 
   return false;
