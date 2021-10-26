@@ -10,7 +10,7 @@ export function ParamToFormData(param?: Params) {
   return form;
 }
 
-export const checkPermission = async (permission: string) => {
+export async function checkPermission(permission: string) {
   const allow = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS[permission]);
   if (!allow) {
     const user_choice = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS[permission]);
@@ -26,5 +26,5 @@ export const checkPermission = async (permission: string) => {
     }
   }
 
-  return false;
+  return allow;
 }
