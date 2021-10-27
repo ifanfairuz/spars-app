@@ -6,12 +6,13 @@ import { KatimScreenProps } from '.';
 import KeluhanKatimContext from '@context/keluhan/KeluhanKatimContext';
 import Keluhan from '@store/models/Keluhan';
 import moment from 'moment';
+import { getOrDash } from '@support/helpers/string';
 
 export type DetailReportKeluhanProps = KatimScreenProps<'DetailReportKeluhan'>;
 
 const DetailReportKeluhan: FC<DetailReportKeluhanProps> = ({ navigation }) => {
   const keluhanContext = useContext(KeluhanKatimContext);
-  const [riwayatOpen, setRiwayatOpen] = useState(false);
+  const [riwayatOpen, setRiwayatOpen] = useState<Keluhan|undefined>(undefined);
   const goBack = () => navigation.canGoBack() && navigation.goBack();
 
   const loading_refresh = useMemo(() => keluhanContext.state.loading, [keluhanContext.state.loading]);
@@ -36,7 +37,7 @@ const DetailReportKeluhan: FC<DetailReportKeluhanProps> = ({ navigation }) => {
         <ReportCardKatim data={item} />
         <HStack justifyContent='space-between'>
           <Text bold color='spars.green'>{ (item.status || '').toUpperCase() }</Text>
-          <Pressable flexDirection='row' onPress={() => setRiwayatOpen(true)}>
+          <Pressable flexDirection='row' onPress={() => setRiwayatOpen(item)}>
             <Text bold>Lihat Riwayat</Text>
             <ChevronRightIcon size='sm' />
           </Pressable>
@@ -90,20 +91,20 @@ const DetailReportKeluhan: FC<DetailReportKeluhanProps> = ({ navigation }) => {
           </VStack>
         } />
 
-      <Actionsheet isOpen={riwayatOpen} onClose={() => setRiwayatOpen(false)}>
+      <Actionsheet isOpen={!!riwayatOpen} onClose={() => setRiwayatOpen(undefined)}>
         <Actionsheet.Content>
           <ScrollView width="100%">
-          <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
+            <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
               <Text color='spars.grey' fontSize='16'>Proses</Text>
-              <Text bold>10 - 11 - 2021</Text>
+              <Text bold>{ getOrDash(riwayatOpen?.tgl_masuk) }</Text>
             </HStack>
             <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
               <Text color='spars.grey' fontSize='16'>Approval</Text>
-              <Text bold>11 - 11 - 2021</Text>
+              <Text bold>{ getOrDash(riwayatOpen?.tgl_approval_katim) }</Text>
             </HStack>
             <HStack py='5' mx='5' justifyContent='space-between' borderBottomWidth='1' borderColor='#DEDEDE'>
               <Text color='spars.grey' fontSize='16'>Selesai</Text>
-              <Text bold>12 - 11 - 2021</Text>
+              <Text bold>{ getOrDash(riwayatOpen?.tgl_penanganan_teknisi) }</Text>
             </HStack>
           </ScrollView>
         </Actionsheet.Content>

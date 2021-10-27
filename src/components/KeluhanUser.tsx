@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { HStack, Pressable, Text, VStack } from 'native-base';
+import { Box, HStack, Pressable, Text, VStack } from 'native-base';
 import Label from './Label';
 import { IVStackProps } from 'native-base/lib/typescript/components/primitives/Stack/VStack';
 import Keluhan from '@store/models/Keluhan';
@@ -32,6 +32,42 @@ const KeluhanUser: FC<KeluhanUserProps> = ({ onPress, data, index, ...props }) =
           </HStack>
           <Text color='spars.grey'>{ ellipsis(data.no_seri, 40) }</Text>
         </VStack>
+        { !!data.detail.deskripsi_keluhan && (
+          <Box
+            p='3'
+            alignItems='center'
+            borderWidth='1'
+            borderColor='#BDBDBD'
+            borderRadius='2'
+            borderStyle='dashed'
+            _text={{ color: 'spars.orange', fontWeight: '600', fontSize: 'xs',  letterSpacing: '1' }}>
+            { ellipsis(data.detail.deskripsi_keluhan, 30) }
+          </Box>
+        ) }
+        { !!data.catatan_teknisi && (
+          <Box
+            p='3'
+            alignItems='center'
+            borderWidth='1'
+            borderColor='#BDBDBD'
+            borderRadius='2'
+            borderStyle='dashed'
+            _text={{ color: 'spars.blue', fontWeight: '600', fontSize: 'xs',  letterSpacing: '1' }}>
+            { ellipsis(data.catatan_teknisi, 30) }
+          </Box>
+        ) }
+        { !!data.hasil_penanganan && (
+          <Box
+            p='3'
+            alignItems='center'
+            borderWidth='1'
+            borderColor='#BDBDBD'
+            borderRadius='2'
+            borderStyle='dashed'
+            _text={{ color: 'spars.green', fontWeight: '600', fontSize: 'xs',  letterSpacing: '1' }}>
+            { ellipsis(data.hasil_penanganan, 30) }
+          </Box>
+        ) }
         <HStack px='5' py='5' justifyContent='space-between' alignItems='flex-start' bg='spars.bluelight'>
           <VStack>
             <Text>{ getOrDash(data.respon_name) }</Text>

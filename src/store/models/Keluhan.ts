@@ -1,9 +1,11 @@
 export default interface Keluhan {
   id_keluhan: string,
   tgl_masuk: string,
-  tgl_keluhan: string,
+  tgl_approval_katim: string,
+  tgl_penanganan_teknisi: string,
   insiden: string,
   nama_ruangan: string,
+  hasil_penanganan: string,
   foto_teknisi: string,
   id_teknisi: string,
   foto_user: string,
@@ -12,7 +14,7 @@ export default interface Keluhan {
   respon_name: string,
   nama_user: string,
   catatan_teknisi: string,
-  status: string,
+  status: 'Proses' | 'Approval' | 'Selesai',
   detail: {
     deskripsi_keluhan: string,
     foto_mini_1: string,

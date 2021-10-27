@@ -138,6 +138,13 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
                   </VStack>
                 </HStack>
 
+                { data.status === 'Selesai' && (
+                  <VStack space='sm' mb='5'>
+                    <Text fontWeight='700'>Hasil Penanganan</Text>
+                    <Text>{data.hasil_penanganan}</Text>
+                  </VStack>
+                ) }
+
                 <VStack space='sm' mb='5'>
                   <Text fontWeight='700'>Catatan Teknisi</Text>
                   <TextArea h={20} fontWeight='normal' placeholder='-' textAlignVertical='top' isDisabled value={data.catatan_teknisi} />
@@ -149,7 +156,7 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
           {
             data.foto_penanganan.length > 0 &&
             <VStack space='sm'>
-              <Text fontWeight='700'>Foto Kejadian</Text>
+              <Text fontWeight='700'>Foto Penanganan</Text>
               { data.foto_penanganan.map(item => 
                 <Image
                   key={`${data.id_keluhan}-${item[0]}`}

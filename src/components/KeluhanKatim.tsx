@@ -44,6 +44,7 @@ const KeluhanKatim: FC<KeluhanKatimProps> = ({ data, onAccept, onDecline, goDeta
       </Pressable>
       <Pressable onPress={goDetail}>
         <Stack p='4' space={5}>
+        { !!data.detail.deskripsi_keluhan && (
           <Box
             p='3'
             alignItems='center'
@@ -54,6 +55,31 @@ const KeluhanKatim: FC<KeluhanKatimProps> = ({ data, onAccept, onDecline, goDeta
             _text={{ color: 'spars.orange', fontWeight: '600', fontSize: 'xs',  letterSpacing: '1' }}>
             { ellipsis(data.detail.deskripsi_keluhan, 30) }
           </Box>
+        ) }
+        { !!data.catatan_teknisi && (
+          <Box
+            p='3'
+            alignItems='center'
+            borderWidth='1'
+            borderColor='#BDBDBD'
+            borderRadius='2'
+            borderStyle='dashed'
+            _text={{ color: 'spars.blue', fontWeight: '600', fontSize: 'xs',  letterSpacing: '1' }}>
+            { ellipsis(data.catatan_teknisi, 30) }
+          </Box>
+        ) }
+        { !!data.hasil_penanganan && (
+          <Box
+            p='3'
+            alignItems='center'
+            borderWidth='1'
+            borderColor='#BDBDBD'
+            borderRadius='2'
+            borderStyle='dashed'
+            _text={{ color: 'spars.green', fontWeight: '600', fontSize: 'xs',  letterSpacing: '1' }}>
+            { ellipsis(data.hasil_penanganan, 30) }
+          </Box>
+        ) }
           <HStack>
             <Box flex='1'>
               <Text fontSize='xs' color='spars.grey' letterSpacing='1'>Tgl Pelaporan</Text>

@@ -132,6 +132,14 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
               </VStack>
             </Fragment>
           )}
+          { data.status === 'Selesai' && (
+            <Fragment>
+              <VStack space='sm' mb='5'>
+                <Text fontWeight='700'>Hasil Penanganan</Text>
+                <TextArea h={20} fontWeight='normal' placeholder='-' textAlignVertical='top' isDisabled value={data.hasil_penanganan} />
+              </VStack>
+            </Fragment>
+          )}
           
           {
             data.foto_penanganan.length > 0 &&

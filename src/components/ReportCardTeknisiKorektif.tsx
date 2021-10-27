@@ -26,7 +26,8 @@ const ReportCardTeknisiKorektif: FC<ReportCardTeknisiKorektifProps> = ({ onPress
           <Text>Kerusakan</Text>
           <Text color='spars.grey'>{ ellipsis(data.detail.deskripsi_keluhan, 30) }</Text>
         </VStack>
-        {!!data.catatan_teknisi && <Center
+        { !!data.detail.deskripsi_keluhan && (
+          <Center
           p='4'
           borderWidth='1'
           borderStyle='dashed'
@@ -34,8 +35,33 @@ const ReportCardTeknisiKorektif: FC<ReportCardTeknisiKorektifProps> = ({ onPress
           borderRadius='4'
           bg='spars.lightgrey'
           _text={{ color: 'spars.orange', fontSize: 'md' }}>
-          { ellipsis(data.catatan_teknisi, 30) }
-        </Center>}
+            { ellipsis(data.detail.deskripsi_keluhan, 30) }
+          </Center>
+        ) }
+        { !!data.catatan_teknisi && (
+          <Center
+          p='4'
+          borderWidth='1'
+          borderStyle='dashed'
+          borderColor='#BDBDBD'
+          borderRadius='4'
+          bg='spars.lightgrey'
+          _text={{ color: 'spars.blue', fontSize: 'md' }}>
+            { ellipsis(data.catatan_teknisi, 30) }
+          </Center>
+        ) }
+        { !!data.hasil_penanganan && (
+          <Center
+          p='4'
+          borderWidth='1'
+          borderStyle='dashed'
+          borderColor='#BDBDBD'
+          borderRadius='4'
+          bg='spars.lightgrey'
+          _text={{ color: 'spars.green', fontSize: 'md' }}>
+            { ellipsis(data.hasil_penanganan, 30) }
+          </Center>
+        ) }
         <HStack space='sm' justifyContent='flex-start' alignItems='center'>
           <Box bg='white' borderRadius='100'>
             <Image size='xs' borderRadius='100' src={imageProfile(data.foto_user)} alt='profile' />
