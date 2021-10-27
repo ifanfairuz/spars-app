@@ -5,12 +5,13 @@ import LoginRequest from "./LoginRequest";
 export async function login(username: string, password: string) {
   const request = new LoginRequest(username, password);
   const response = await http.execute(request).catch<undefined>(() => undefined);
-  if (response) {
+  if (response && response.msg == 'Success') {
     await store_session({ user: response.user });
     return response.user;
+  } else {
+    throw new Error(response?.msg || 'Error');
+    return undefined;
   }
-
-  return undefined;
 }
 
 export async function logout() {

@@ -17,11 +17,17 @@ export const AuthContextProvider: FC<ContextProviderProps<State, AuthAction>> = 
     const con = {
       state,
       login: (username: string, password: string) => {
-        dispatch({ type: 'SET_LOADING', payload: true });
         return login(username, password)
         .then(user => {
+          dispatch({ type: 'SET_LOADING', payload: true });
           user ? dispatch({ type:'SET_USER', payload: user }) : dispatch({ type: 'REMOVE_USER' });
+          dispatch({ type:'SET_MESSAGE', payload: '' });
           return user;
+        })
+        .catch((e: Error) => {
+          dispatch({ type: 'REMOVE_USER' });
+          dispatch({ type:'SET_MESSAGE', payload: e.message });
+          return undefined;
         })
         .finally(() => dispatch({ type: 'SET_LOADING', payload: false }));
       },

@@ -4,14 +4,17 @@ import User from "@store/models/User";
 export type State = {
   user?: User,
   loading: boolean
+  message: string
 };
 export const state: State = {
   user: undefined,
-  loading: true
+  loading: true,
+  message: ''
 }
 
 export type AuthAction =  Action<'SET_USER', typeof state.user> |
                           ActionNoPayload<'REMOVE_USER'> |
+                          Action<'SET_MESSAGE', string> |
                           Action<'SET_LOADING', boolean>
 
 export const actions = (state: State, action: AuthAction) => {
@@ -25,6 +28,11 @@ export const actions = (state: State, action: AuthAction) => {
       return {
         user: undefined,
         loading: false
+      }
+    case 'SET_MESSAGE':
+      return {
+        ...state,
+        message: action.payload
       }
     case 'SET_LOADING':
       return {

@@ -1,17 +1,23 @@
 import React, { FC, useContext, useState } from 'react';
 import { Box, Button, Center, HStack, Pressable, Text, VStack } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { Logo, Input, GlassBg } from '@components';
+import { Logo, Input, GlassBg, Loader } from '@components';
 import AuthContext from '@context/AuthContext';
 
 const Login: FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
-  const login = () => authContext.login(username, password);
+  const login = () => {
+    setLoading(true);
+    authContext.login(username, password)
+    .finally(() => setLoading(false));
+  }
 
   return (
     <KeyboardAwareScrollView contentContainerStyle={{ flex:1 }}>
+      <Loader show={loading} />
       <Box flex={1} bg='spars.green2' justifyContent='flex-end'>
         <Center height='40%' width='100%' position='absolute' top={0}>
           <GlassBg />
@@ -22,8 +28,17 @@ const Login: FC = () => {
           space={5}
           borderTopRadius={24}
           px={8} py={10}>
-          <Input placeholder='johndoe' label='Username / Email' value={username} onChangeText={setUsername} />
-          <Input placeholder='••••••••' label='Password' inputProps={{ type: 'password' }} value={password} onChangeText={setPassword} />
+          {!!authContext.state.message && <Text fontSize='sm' color='red.500' alignSelf='center' mt={-3} bold>{ authContext.state.message }</Text>}
+          <Input
+            placeholder='johndoe'
+            label='Username / Email'
+            inputProps={{ autoCompleteType: 'username', textContentType: 'username', autoCapitalize: 'none' }}
+            value={username} onChangeText={setUsername} />
+          <Input
+            placeholder='••••••••'
+            label='Password'
+            inputProps={{ type: 'password', selectTextOnFocus: true, autoCompleteType: 'password', textContentType: 'password', autoCapitalize: 'none' }}
+            value={password} onChangeText={setPassword} />
           <Pressable>
             <Text color='spars.orange'>Lupa Password ?</Text>
           </Pressable>
