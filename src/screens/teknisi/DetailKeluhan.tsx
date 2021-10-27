@@ -7,7 +7,7 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import moment from 'moment';
 import KeluhanTeknisiContext from '@context/keluhan/KeluhanTeknisiContext';
 import { Asset } from 'react-native-image-picker';
-import { imageKeluhan, imageProfile } from '@support/helpers/image';
+import { imageKeluhan, imagePenanganan, imageProfile } from '@support/helpers/image';
 import { getOrDash } from '@support/helpers/string';
 import Keluhan from '@store/models/Keluhan';
 import { getColorHasilPenanganan } from '@support/helpers/functions';
@@ -18,7 +18,6 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
   const keluhanContext = useContext(KeluhanTeknisiContext);
   const [head_height, setHeadHeight] = useState(0);
   const [carousel_active, setCarouselActive] = useState(0);
-  const [carousel_penanganan_active, setPenangananCarouselActive] = useState(0);
   const [riwayatOpen, setRiwayatOpen] = useState<Keluhan|undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const goBack = () => navigation.canGoBack() && navigation.goBack();
@@ -65,7 +64,7 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
     .finally(() => setLoading(false));
   }
   
-  const renderCarouselItem: ListRenderItem<string[]> = ({ item }) => {
+  const renderCarouselItemKeluhan: ListRenderItem<string[]> = ({ item }) => {
     return (
       <Image borderRadius='8' size='2xl' resizeMode='cover' resizeMethod='scale' src={imageKeluhan(item[0])} alt='image' style={{ width: '100%' }} />
     );
@@ -119,7 +118,7 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
             <Carousel
               layout='tinder'
               data={data.foto_kejadian}
-              renderItem={renderCarouselItem}
+              renderItem={renderCarouselItemKeluhan}
               keyExtractor={(i: string[]) => i[0]}
               sliderWidth={Dimensions.get('window').width-40}
               itemWidth={Dimensions.get('window').width-40}
@@ -188,37 +187,21 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
             </VStack>
 
             { data.status === 'Selesai' ? (
-              <VStack space='sm' mb='5'>
-                <Text bold>Foto Penanganan</Text>
-                <Carousel
-                  layout='stack'
-                  data={data.foto_penanganan}
-                  renderItem={renderCarouselItem}
-                  keyExtractor={item => `${data.id_keluhan}-${item[0]}`}
-                  sliderWidth={Dimensions.get('window').width-40}
-                  itemWidth={Dimensions.get('window').width-40}
-                  onSnapToItem={i => setPenangananCarouselActive(i)} />
-                <Pagination
-                  dotsLength={data.foto_penanganan.length}
-                  activeDotIndex={carousel_penanganan_active}
-                  containerStyle={{ justifyContent: 'flex-start', paddingVertical: 0, paddingHorizontal: 0, marginTop: 5 }}
-                  dotStyle={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 5,
-                      marginHorizontal: 0,
-                      backgroundColor: '#27AE60'
-                  }}
-                  inactiveDotStyle={{
-                      backgroundColor: '#C4C4C4'
-                  }}
-                  dotContainerStyle={{
-                    marginHorizontal: 4
-                  }}
-                  inactiveDotOpacity={1}
-                  inactiveDotScale={0.7}
-                />
-              </VStack>
+              data.foto_penanganan.length > 0 &&(
+                <VStack space='sm'>
+                  <Text bold>Foto Penanganan</Text>
+                  { data.foto_penanganan.map(item => 
+                    <Image
+                      key={`${data.id_keluhan}-${item[0]}`}
+                      borderRadius='8'
+                      size='2xl'
+                      resizeMode='cover'
+                      resizeMethod='scale'
+                      src={imagePenanganan(item[0])}
+                      alt='image'
+                      style={{ width: '100%' }} />) }
+                </VStack>
+              )
             ) : (
               <TakePhoto
                 values={images_list}
