@@ -1,4 +1,5 @@
 import Keluhan from '@store/models/Keluhan';
+import { getColorHasilPenanganan } from '@support/helpers/functions';
 import { imageProfile } from '@support/helpers/image';
 import { ellipsis, getOrDash } from '@support/helpers/string';
 import { Box, Center, HStack, Image, Text, VStack } from 'native-base';
@@ -24,42 +25,24 @@ const ReportCard: FC<{ data: Keluhan }> = ({ data }) => {
         <Text>Kerusakan</Text>
         <Text color='spars.grey'>{ getOrDash(data.detail.deskripsi_keluhan) }</Text>
       </VStack>
-      { !!data.detail.deskripsi_keluhan && (
-          <Center
-          p='4'
-          borderWidth='1'
-          borderStyle='dashed'
-          borderColor='#BDBDBD'
-          borderRadius='4'
-          bg='spars.lightgrey'
-          _text={{ color: 'spars.orange', fontSize: 'md' }}>
-            { ellipsis(data.detail.deskripsi_keluhan, 30) }
-          </Center>
-        ) }
-        { !!data.catatan_teknisi && (
-          <Center
-          p='4'
-          borderWidth='1'
-          borderStyle='dashed'
-          borderColor='#BDBDBD'
-          borderRadius='4'
-          bg='spars.lightgrey'
-          _text={{ color: 'spars.blue', fontSize: 'md' }}>
-            { ellipsis(data.catatan_teknisi, 30) }
-          </Center>
-        ) }
-        { !!data.hasil_penanganan && (
-          <Center
-          p='4'
-          borderWidth='1'
-          borderStyle='dashed'
-          borderColor='#BDBDBD'
-          borderRadius='4'
-          bg='spars.lightgrey'
-          _text={{ color: 'spars.green', fontSize: 'md' }}>
-            { ellipsis(data.hasil_penanganan, 30) }
-          </Center>
-        ) }
+      { !!data.hasil_penanganan && (
+        <VStack>
+          <Text>Hasil Penanganan</Text>
+          <Text color={getColorHasilPenanganan(data.hasil_penanganan)}>{ data.hasil_penanganan }</Text>
+        </VStack>
+      ) }
+      { !!data.catatan_teknisi && (
+        <Center
+        p='4'
+        borderWidth='1'
+        borderStyle='dashed'
+        borderColor='#BDBDBD'
+        borderRadius='4'
+        bg='spars.lightgrey'
+        _text={{ color: 'spars.blue', fontSize: 'md' }}>
+          { ellipsis(data.catatan_teknisi, 30) }
+        </Center>
+      ) }
       <HStack space='sm' justifyContent='flex-start' alignItems='center'>
         <Box bg='white' borderRadius='100'>
           <Image size='xs' borderRadius='100' src={imageProfile(data.foto_teknisi)} alt='profile' />

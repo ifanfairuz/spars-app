@@ -4,6 +4,7 @@ import Label from './Label';
 import { IVStackProps } from 'native-base/lib/typescript/components/primitives/Stack/VStack';
 import Keluhan from '@store/models/Keluhan';
 import { ellipsis, getOrDash } from '@support/helpers/string';
+import { getColorHasilPenanganan } from '@support/helpers/functions';
 
 export interface KeluhanUserProps extends IVStackProps {
   data: Keluhan
@@ -27,13 +28,14 @@ const KeluhanUser: FC<KeluhanUserProps> = ({ onPress, data, index, ...props }) =
         </HStack>
         <VStack px='5'>
           <HStack justifyContent='space-between' alignItems='flex-start'>
-            <Text fontWeight='700' flex='1'>{ data.nama_alat }</Text>
+            <Text bold flex='1'>{ data.nama_alat }</Text>
             <Text>{ ellipsis(data.nama_ruangan, 20) }</Text>
           </HStack>
           <Text color='spars.grey'>{ ellipsis(data.no_seri, 40) }</Text>
         </VStack>
         { !!data.detail.deskripsi_keluhan && (
           <Box
+            mx='5'
             p='3'
             alignItems='center'
             borderWidth='1'
@@ -44,8 +46,15 @@ const KeluhanUser: FC<KeluhanUserProps> = ({ onPress, data, index, ...props }) =
             { ellipsis(data.detail.deskripsi_keluhan, 30) }
           </Box>
         ) }
+        { !!data.hasil_penanganan && (
+          <HStack mx={5} justifyContent='space-between' alignItems='center'>
+            <Text>Hasil Penanganan</Text>
+            <Text bold color={getColorHasilPenanganan(data.hasil_penanganan)}>{ data.hasil_penanganan }</Text>
+          </HStack>
+        ) }
         { !!data.catatan_teknisi && (
           <Box
+            mx='5'
             p='3'
             alignItems='center'
             borderWidth='1'
@@ -56,24 +65,12 @@ const KeluhanUser: FC<KeluhanUserProps> = ({ onPress, data, index, ...props }) =
             { ellipsis(data.catatan_teknisi, 30) }
           </Box>
         ) }
-        { !!data.hasil_penanganan && (
-          <Box
-            p='3'
-            alignItems='center'
-            borderWidth='1'
-            borderColor='#BDBDBD'
-            borderRadius='2'
-            borderStyle='dashed'
-            _text={{ color: 'spars.green', fontWeight: '600', fontSize: 'xs',  letterSpacing: '1' }}>
-            { ellipsis(data.hasil_penanganan, 30) }
-          </Box>
-        ) }
         <HStack px='5' py='5' justifyContent='space-between' alignItems='flex-start' bg='spars.bluelight'>
           <VStack>
             <Text>{ getOrDash(data.respon_name) }</Text>
             <Text color='spars.grey'>{ data.respon_name ? 'Teknisi' : '-' }</Text>
           </VStack>
-          <Text ml='auto' color={status_color} fontWeight='700'>{ data.status }</Text>
+          <Text ml='auto' color={status_color} bold>{ data.status }</Text>
         </HStack>
       </VStack>
     </Pressable>

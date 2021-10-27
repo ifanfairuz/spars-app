@@ -37,7 +37,7 @@ const Input: FC<InputProps> = ({ inputProps, placeholder, label, helper, error, 
           value={value || inputProps?.value}
           onChangeText={onChangeText || inputProps?.onChangeText}
           placeholder={placeholder || inputProps?.placeholder}
-          fontWeight='700'
+          bold
           fontSize='16'
           borderWidth={0}
           p={0} />

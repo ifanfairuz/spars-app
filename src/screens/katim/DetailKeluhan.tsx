@@ -8,6 +8,7 @@ import { getOrDash } from '@support/helpers/string';
 import { imageKeluhan, imagePenanganan, imageProfile } from '@support/helpers/image';
 import KeluhanUserContext from '@context/keluhan/KeluhanUserContext';
 import Keluhan from '@store/models/Keluhan';
+import { getColorHasilPenanganan } from '@support/helpers/functions';
 
 export type DetailKeluhanProps = KatimScreenProps<'DetailKeluhan'>;
 
@@ -74,28 +75,28 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
         <VStack px='5' py='8' bg='white' borderTopRadius='20' minH={Dimensions.get('window').height}>
           <HStack justifyContent='space-between' mb='2' space='xs'>
             <VStack flex='1'>
-              <Text fontWeight='700' fontSize='md'>{ data.nama_alat }</Text>
+              <Text bold fontSize='md'>{ data.nama_alat }</Text>
               <Text color='spars.grey'>{ data.nama_ruangan }</Text>
             </VStack>
             <Box>
               {!!data.insiden && <Label>{ data.insiden }</Label>}
             </Box>
           </HStack>
-          <Text color='spars.green2' fontWeight='700'>{ data.no_seri }</Text>
+          <Text color='spars.green2' bold>{ data.no_seri }</Text>
           
           <Box bg='spars.bluelight' justifyContent='center' alignItems='center' borderRadius='8' my='5' p='4'>
-            <Text color='spars.darkblue' fontWeight='700'>{ data.status }</Text>
+            <Text color='spars.darkblue' bold>{ data.status }</Text>
           </Box>
 
           <VStack space='sm' mb='5'>
-            <Text fontWeight='700'>Deskripsi Keluhan</Text>
+            <Text bold>Deskripsi Keluhan</Text>
             <TextArea h={20} fontWeight='normal' placeholder='-' textAlignVertical='top' isDisabled value={data.detail.deskripsi_keluhan} />
           </VStack>
 
           {
             data.foto_kejadian.length > 0 &&
             <VStack space='sm' mb='5'>
-              <Text fontWeight='700'>Foto Kejadian</Text>
+              <Text bold>Foto Kejadian</Text>
               <Carousel
                 layout='stack'
                 data={data.foto_kejadian}
@@ -133,20 +134,20 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
                 <HStack borderWidth='1' borderColor='spars.darkgrey' borderStyle='dashed' py='2' px='3' space='xs' alignItems='center' my='4'>
                   <Image size='sm' borderRadius='100' src={imageProfile(data.foto_teknisi)} alt='profile' />
                   <VStack>
-                    <Text fontWeight='700'>{ getOrDash(data.respon_name) }</Text>
+                    <Text bold>{ getOrDash(data.respon_name) }</Text>
                     <Text fontWeight='400'>{ data.respon_name ? 'Teknisi' : '-' }</Text>
                   </VStack>
                 </HStack>
 
                 { data.status === 'Selesai' && (
                   <VStack space='sm' mb='5'>
-                    <Text fontWeight='700'>Hasil Penanganan</Text>
-                    <Text>{data.hasil_penanganan}</Text>
+                    <Text bold>Hasil Penanganan</Text>
+                    <Text bold color={getColorHasilPenanganan(data.hasil_penanganan)}>{data.hasil_penanganan}</Text>
                   </VStack>
                 ) }
 
                 <VStack space='sm' mb='5'>
-                  <Text fontWeight='700'>Catatan Teknisi</Text>
+                  <Text bold>Catatan Teknisi</Text>
                   <TextArea h={20} fontWeight='normal' placeholder='-' textAlignVertical='top' isDisabled value={data.catatan_teknisi} />
                 </VStack>
               </Fragment>
@@ -156,7 +157,7 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
           {
             data.foto_penanganan.length > 0 &&
             <VStack space='sm'>
-              <Text fontWeight='700'>Foto Penanganan</Text>
+              <Text bold>Foto Penanganan</Text>
               { data.foto_penanganan.map(item => 
                 <Image
                   key={`${data.id_keluhan}-${item[0]}`}

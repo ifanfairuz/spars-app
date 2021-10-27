@@ -24,7 +24,7 @@ const screenOptions: Record<string, NativeStackNavigationOptions> = {
   FormPemeliharaan: {
     headerShadowVisible: false,
     title: 'Form Pemeliharaan',
-    headerTitle: ({ children }) => <Text fontSize='16' fontWeight='700' letterSpacing='0.5'>{children}</Text>,
+    headerTitle: ({ children }) => <Text fontSize='16' bold letterSpacing='0.5'>{children}</Text>,
     headerTitleAlign: 'center',
     headerLargeTitleShadowVisible: false,
   },

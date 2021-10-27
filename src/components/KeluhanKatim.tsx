@@ -1,10 +1,11 @@
 import React, { FC } from 'react';
-import { AspectRatio, Box, IBoxProps, Image, Stack, Text, HStack, Button, Pressable } from 'native-base';
+import { AspectRatio, Box, IBoxProps, Image, Stack, Text, HStack, Button, Pressable, VStack, Center } from 'native-base';
 import Label from './Label';
 import { gradient } from '@config/native-base';
 import Keluhan from '@store/models/Keluhan';
 import { imageKeluhan } from '@support/helpers/image';
-import { ellipsis } from '@support/helpers/string';
+import { ellipsis, getOrDash } from '@support/helpers/string';
+import { getColorHasilPenanganan } from '@support/helpers/functions';
 
 export interface KeluhanKatimProps extends IBoxProps {
   onAccept?: () => void
@@ -45,41 +46,33 @@ const KeluhanKatim: FC<KeluhanKatimProps> = ({ data, onAccept, onDecline, goDeta
       <Pressable onPress={goDetail}>
         <Stack p='4' space={5}>
         { !!data.detail.deskripsi_keluhan && (
-          <Box
-            p='3'
-            alignItems='center'
+            <Center
+            p='4'
             borderWidth='1'
-            borderColor='#BDBDBD'
-            borderRadius='2'
             borderStyle='dashed'
-            _text={{ color: 'spars.orange', fontWeight: '600', fontSize: 'xs',  letterSpacing: '1' }}>
-            { ellipsis(data.detail.deskripsi_keluhan, 30) }
-          </Box>
-        ) }
-        { !!data.catatan_teknisi && (
-          <Box
-            p='3'
-            alignItems='center'
+            borderColor='#BDBDBD'
+            borderRadius='4'
+            bg='spars.lightgrey'
+            _text={{ color: 'spars.orange', fontSize: 'sm' }}>
+              { ellipsis(data.detail.deskripsi_keluhan, 30) }
+            </Center>
+          ) }
+          <VStack>
+            <Text>Hasil Penanganan</Text>
+            <Text color={getColorHasilPenanganan(data.hasil_penanganan)}>{ getOrDash(data.hasil_penanganan) }</Text>
+          </VStack>
+          { !!data.catatan_teknisi && (
+            <Center
+            p='4'
             borderWidth='1'
-            borderColor='#BDBDBD'
-            borderRadius='2'
             borderStyle='dashed'
-            _text={{ color: 'spars.blue', fontWeight: '600', fontSize: 'xs',  letterSpacing: '1' }}>
-            { ellipsis(data.catatan_teknisi, 30) }
-          </Box>
-        ) }
-        { !!data.hasil_penanganan && (
-          <Box
-            p='3'
-            alignItems='center'
-            borderWidth='1'
             borderColor='#BDBDBD'
-            borderRadius='2'
-            borderStyle='dashed'
-            _text={{ color: 'spars.green', fontWeight: '600', fontSize: 'xs',  letterSpacing: '1' }}>
-            { ellipsis(data.hasil_penanganan, 30) }
-          </Box>
-        ) }
+            borderRadius='4'
+            bg='spars.lightgrey'
+            _text={{ color: 'spars.blue', fontSize: 'sm' }}>
+              { ellipsis(data.catatan_teknisi, 30) }
+            </Center>
+          ) }
           <HStack>
             <Box flex='1'>
               <Text fontSize='xs' color='spars.grey' letterSpacing='1'>Tgl Pelaporan</Text>
@@ -92,26 +85,28 @@ const KeluhanKatim: FC<KeluhanKatimProps> = ({ data, onAccept, onDecline, goDeta
           </HStack>
         </Stack>
       </Pressable>
-      <Stack p='4' space={5}>
-        <HStack space='md'>
-          <Button
-            flex='1'
-            variant='outline' 
-            borderColor='spars.grey' _text={{ color: 'spars.grey' }}
-            _pressed={{ bg: 'white', opacity: 0.8, borderColor: 'spars.grey' }}
-            onPress={onDecline}>
-            Tolak
-          </Button>
-          <Button
-            flex='1'
-            bg='spars.orange'
-            _text={{ color: 'white' }} shadow='9.orange'
-            _pressed={{ bg: 'spars.orange', opacity: 0.8 }}
-            onPress={onAccept}>
-            Terima
-          </Button>
-        </HStack>
-      </Stack>
+      { data.status === 'Proses' && (
+        <Stack p='4' space={5}>
+          <HStack space='md'>
+            <Button
+              flex='1'
+              variant='outline' 
+              borderColor='spars.grey' _text={{ color: 'spars.grey' }}
+              _pressed={{ bg: 'white', opacity: 0.8, borderColor: 'spars.grey' }}
+              onPress={onDecline}>
+              Tolak
+            </Button>
+            <Button
+              flex='1'
+              bg='spars.orange'
+              _text={{ color: 'white' }} shadow='9.orange'
+              _pressed={{ bg: 'spars.orange', opacity: 0.8 }}
+              onPress={onAccept}>
+              Terima
+            </Button>
+          </HStack>
+        </Stack>
+      ) }
     </Box>
   )
 }

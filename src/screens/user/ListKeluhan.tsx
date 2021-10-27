@@ -68,7 +68,7 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
         </Pressable>
       </HStack>
       <Box px='5' py='5' bg='white' borderTopRadius='20'>
-        <Text fontWeight='700' fontSize='lg'>Keluhan</Text>
+        <Text bold fontSize='lg'>Keluhan</Text>
       </Box>
     </VStack>
   )
@@ -96,7 +96,7 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
 
       <Box bg='white' bottom='0' shadow='10.black' p='5'>
         <Pressable p='2' onPress={() => goToTambahKeluhan()}>
-          <Text fontWeight='700' color='spars.orange'>+ TAMBAH LAPORAN KELUHAN</Text>
+          <Text bold color='spars.orange'>+ TAMBAH LAPORAN KELUHAN</Text>
         </Pressable>
         <ButtonScan position='absolute' right='5' top={-20} onPress={goToTakeBarcode} />
       </Box>

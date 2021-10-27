@@ -1,4 +1,5 @@
 import Keluhan from '@store/models/Keluhan';
+import { getColorHasilPenanganan } from '@support/helpers/functions';
 import { imageProfile } from '@support/helpers/image';
 import { ellipsis } from '@support/helpers/string';
 import { Box, Center, HStack, Image, Text, VStack } from 'native-base';
@@ -26,17 +27,11 @@ const ReportCardTeknisiKorektif: FC<ReportCardTeknisiKorektifProps> = ({ onPress
           <Text>Kerusakan</Text>
           <Text color='spars.grey'>{ ellipsis(data.detail.deskripsi_keluhan, 30) }</Text>
         </VStack>
-        { !!data.detail.deskripsi_keluhan && (
-          <Center
-          p='4'
-          borderWidth='1'
-          borderStyle='dashed'
-          borderColor='#BDBDBD'
-          borderRadius='4'
-          bg='spars.lightgrey'
-          _text={{ color: 'spars.orange', fontSize: 'md' }}>
-            { ellipsis(data.detail.deskripsi_keluhan, 30) }
-          </Center>
+        { !!data.hasil_penanganan && (
+          <VStack>
+            <Text>Hasil Penanganan</Text>
+            <Text color={getColorHasilPenanganan(data.hasil_penanganan)}>{ data.hasil_penanganan }</Text>
+          </VStack>
         ) }
         { !!data.catatan_teknisi && (
           <Center
@@ -48,18 +43,6 @@ const ReportCardTeknisiKorektif: FC<ReportCardTeknisiKorektifProps> = ({ onPress
           bg='spars.lightgrey'
           _text={{ color: 'spars.blue', fontSize: 'md' }}>
             { ellipsis(data.catatan_teknisi, 30) }
-          </Center>
-        ) }
-        { !!data.hasil_penanganan && (
-          <Center
-          p='4'
-          borderWidth='1'
-          borderStyle='dashed'
-          borderColor='#BDBDBD'
-          borderRadius='4'
-          bg='spars.lightgrey'
-          _text={{ color: 'spars.green', fontSize: 'md' }}>
-            { ellipsis(data.hasil_penanganan, 30) }
           </Center>
         ) }
         <HStack space='sm' justifyContent='flex-start' alignItems='center'>

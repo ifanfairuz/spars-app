@@ -28,3 +28,16 @@ export async function checkPermission(permission: string) {
 
   return allow;
 }
+
+export function getColorHasilPenanganan(hasil?: string) {
+  switch (hasil?.toLowerCase()) {
+    case 'baik':
+      return 'spars.green2';
+    case 'kurang baik':
+      return 'spars.orange';
+    case 'tidak baik':
+      return 'spars.red';
+    default:
+      return 'spars.grey';
+  }
+}

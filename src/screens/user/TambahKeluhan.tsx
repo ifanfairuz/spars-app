@@ -109,6 +109,7 @@ const TambahKeluhan: FC<TambahKeluhanProps> = ({ navigation, route }) => {
                 clearOnFocus={false}
                 useFilter={false}
                 textInputProps={{
+                  selectTextOnFocus: true,
                   placeholder: "Hematology Analys",
                   placeholderTextColor: '#9E9E9E',
                   autoCorrect: false,
@@ -130,7 +131,7 @@ const TambahKeluhan: FC<TambahKeluhanProps> = ({ navigation, route }) => {
                 containerStyle={{ flexGrow: 1, flexShrink: 1, justifyContent: 'center' }}
                 ChevronIconComponent={<CircleIcon size='sm' color='grey' />}
                 ClearIconComponent={<ChevronDownIcon size='sm' color='grey' />}
-                showClear={false}
+                showClear={true}
                 showChevron={false} />
               <Box justifyContent='center' alignItems='center' px='2' py='1' bg='white' borderRightRadius='8'>
                 <ButtonScan p='3' imageProps={{ size: 5 }} onPress={goToTakeBarcode} />

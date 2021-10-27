@@ -109,7 +109,7 @@ const FormPemeliharaan: FC<FormPemeliharaanProps> = ({ navigation }) => {
             borderStyle='dashed'
             justifyContent='space-between'
             flexDir='row'>
-            <Text fontSize='14' fontWeight='700' color='spars.grey'>Upload Foto (Maks 3x)</Text>
+            <Text fontSize='14' bold color='spars.grey'>Upload Foto (Maks 3x)</Text>
             <Image size='2xs' source={require('@assets/images/icon_camera.png')} />
           </Pressable>
 

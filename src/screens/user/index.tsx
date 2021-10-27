@@ -19,7 +19,7 @@ const screenOptions: Record<string, NativeStackNavigationOptions> = {
   TambahKeluhan: {
     headerShadowVisible: false,
     title: 'Tambah Keluhan',
-    headerTitle: ({ children }) => <Text fontSize='16' fontWeight='700' letterSpacing='0.5'>{children}</Text>,
+    headerTitle: ({ children }) => <Text fontSize='16' bold letterSpacing='0.5'>{children}</Text>,
     headerTitleAlign: 'center',
     headerLargeTitleShadowVisible: false,
   },

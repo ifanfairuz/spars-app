@@ -10,6 +10,7 @@ import { Asset } from 'react-native-image-picker';
 import { imageKeluhan, imageProfile } from '@support/helpers/image';
 import { getOrDash } from '@support/helpers/string';
 import Keluhan from '@store/models/Keluhan';
+import { getColorHasilPenanganan } from '@support/helpers/functions';
 
 export type DetailKeluhanProps = TeknisiScreenProps<'DetailKeluhan'>;
 
@@ -160,7 +161,7 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
             </HStack>
 
             <Box bg='spars.bluelight' justifyContent='center' alignItems='center' borderRadius='8' p='4' flex='1'>
-              <Text color='spars.darkblue' fontWeight='700'>{ data.detail.deskripsi_keluhan }</Text>
+              <Text color='spars.darkblue' bold>{ data.detail.deskripsi_keluhan }</Text>
             </Box>
 
             <HStack justifyContent='space-between' my='1'>
@@ -182,13 +183,13 @@ const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
                   <Radio alignItems='flex-start' value='Tidak Layak'>Tidak Layak</Radio>
                 </Radio.Group>
               ) : (
-                <Text bold>{ data.hasil_penanganan || '-' }</Text>
+                <Text bold color={getColorHasilPenanganan(data.hasil_penanganan)}>{ data.hasil_penanganan }</Text>
               ) }
             </VStack>
 
             { data.status === 'Selesai' ? (
               <VStack space='sm' mb='5'>
-                <Text fontWeight='700'>Foto Kejadian</Text>
+                <Text bold>Foto Penanganan</Text>
                 <Carousel
                   layout='stack'
                   data={data.foto_penanganan}
