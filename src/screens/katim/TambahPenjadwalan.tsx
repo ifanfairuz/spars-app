@@ -1,15 +1,20 @@
-import React, { FC, useState } from 'react';
-import { VStack, ScrollView, HStack, Text, Pressable, Button, ArrowBackIcon, Select, ChevronDownIcon, Radio, Input, TextArea, Checkbox } from 'native-base';
+import React, { FC, useContext, useMemo, useState } from 'react';
+import { VStack, ScrollView, HStack, Text, Pressable, Button, ArrowBackIcon, Select, ChevronDownIcon, Radio, Input, TextArea, Checkbox, CircleIcon, Box } from 'native-base';
 import DateTimePicker, { AndroidEvent } from '@react-native-community/datetimepicker';
-import { GlassBg, CalendarIcon } from '@components';
+import { GlassBg, CalendarIcon, ButtonScan } from '@components';
 import { KatimScreenProps } from '.';
 import { Dimensions } from 'react-native';
 import moment, { Moment } from 'moment';
+import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
+import Alat from '@store/models/Alat';
+import PemeliharaanKatimContext from '@context/pemeliharaan/PemeliharaanKatimContext';
 
 
 export type TambahPenjadwalanProps = KatimScreenProps<'TambahPenjadwalan'>;
 
 const TambahPenjadwalan: FC<TambahPenjadwalanProps> = ({ navigation }) => {
+  const pemeliharaanContext = useContext(PemeliharaanKatimContext);
+
   const [head_height, setHeadHeight] = useState(0);
   const [interval, setInterval] = useState('manual');
   const [start_date, setStartDate] = useState<Moment|undefined>();
@@ -17,7 +22,58 @@ const TambahPenjadwalan: FC<TambahPenjadwalanProps> = ({ navigation }) => {
   const [show_datepicker_start, setShowDatepickerStart] = useState(false);
   const [show_datepicker_end, setShowDatepickerEnd] = useState(false);
   const goBack = () => navigation.canGoBack() && navigation.goBack();
-  const goToMain = () => navigation.replace('DetailReport');
+  const goToMain = () => navigation.replace('PilihAlat');
+
+  const [alats, setAlats] = useState({
+    current: 1,
+    page: 0,
+    data: [] as Alat[]
+  });
+  const [loading_alat_bycode, setLoadingAlatByCode] = useState(false);
+  const [alats_loading, setAlatsLoading] = useState(false);
+
+  const getAlatByCode = (code: string) => {
+    setLoadingAlatByCode(true);
+    return pemeliharaanContext.getAlat(code, alats.current, false)
+    .then(res => {
+      const data = res.data.shift();
+      if (data) {
+        setAlats({
+          ...alats,
+          current: 1,
+          data: [data]
+        });
+      }
+      setLoadingAlatByCode(false);
+    })
+    .catch(() => {
+      setLoadingAlatByCode(false);
+    });
+  }
+
+  const getAlatByKey = (key: string) => {
+    if (!alats_loading) setAlatsLoading(true);
+    pemeliharaanContext.getAlat(key, alats.current, true)
+    .then(res => {
+      if (alats.page == res.page && alats.current+1 == res.current) {
+        setAlats({
+          ...alats,
+          current: res.current,
+          data: [...alats.data, ...res.data]
+        });
+      } else setAlats(res);
+    })
+    .finally(() => setAlatsLoading(false));
+  }
+
+  const alats_list = useMemo(() => alats.data.map(a => ({ id: a.id_alat, title: `${a.nama_alat} | ${a.no_seri}`, data: a })), [alats]);
+
+  const goToTakeBarcode = () => navigation.navigate('TakeBarcode', {
+    onRead: ({ data }, nav) => {
+      getAlatByCode(data);
+      nav.goBack();
+    }
+  });
 
   const submit = () => {
     goToMain();
@@ -40,6 +96,47 @@ const TambahPenjadwalan: FC<TambahPenjadwalanProps> = ({ navigation }) => {
         </HStack>
         
         <VStack space='md' px='5' py='6' bg='white' borderTopRadius='20' minH={Dimensions.get('window').height - 20 - head_height}>
+
+          <HStack borderWidth='1' borderRadius='8' borderColor='spars.darkgrey' p='0' bg='spars.lightgrey' position='relative' zIndex={2}>
+            <AutocompleteDropdown
+              dataSet={alats_list}
+              onChangeText={key => getAlatByKey(key)}
+              // onSelectItem={(item: { id: string, title: string, data: Alat }) => setAlat(item?.data)}
+              debounce={600}
+              suggestionsListMaxHeight={Dimensions.get("window").height * 0.4}
+              loading={alats_loading}
+              clearOnFocus={false}
+              useFilter={false}
+              textInputProps={{
+                selectTextOnFocus: true,
+                placeholder: "Hematology Analys",
+                placeholderTextColor: '#9E9E9E',
+                autoCorrect: false,
+                autoCapitalize: "none",
+                style: {
+                  backgroundColor: "transparent",
+                  color: "#000",
+                  shadow: 'none'
+                }
+              }}
+              rightButtonsContainerStyle={{
+                alignSelf: "center",
+                backgroundColor: "transparent"
+              }}
+              suggestionsListContainerStyle={{
+                backgroundColor: "#ffffff",
+                zIndex: 2,
+              }}
+              containerStyle={{ flexGrow: 1, flexShrink: 1, justifyContent: 'center' }}
+              ChevronIconComponent={<CircleIcon size='sm' color='grey' />}
+              ClearIconComponent={<ChevronDownIcon size='sm' color='grey' />}
+              showClear={true}
+              showChevron={false} />
+            <Box justifyContent='center' alignItems='center' px='2' py='1' bg='white' borderRightRadius='8'>
+              <ButtonScan p='3' imageProps={{ size: 5 }} onPress={goToTakeBarcode} />
+            </Box>
+          </HStack>
+
           <Select
             p='5'
             placeholder='Pilih Tipe Pemeliharaan'

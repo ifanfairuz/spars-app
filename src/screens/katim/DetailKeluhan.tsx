@@ -6,7 +6,7 @@ import { GlassBg, Label } from '@components';
 import { KatimScreenProps } from '.';
 import { getOrDash } from '@support/helpers/string';
 import { imageKeluhan, imagePenanganan, imageProfile } from '@support/helpers/image';
-import KeluhanUserContext from '@context/keluhan/KeluhanUserContext';
+import KeluhanKatimContext from '@context/keluhan/KeluhanKatimContext';
 import Keluhan from '@store/models/Keluhan';
 import { getColorHasilPenanganan } from '@support/helpers/functions';
 
@@ -14,7 +14,7 @@ export type DetailKeluhanProps = KatimScreenProps<'DetailKeluhan'>;
 
 const DetailKeluhan: FC<DetailKeluhanProps> = ({ navigation, route }) => {
   const [carousel_active, setCarouselActive] = useState(0);
-  const keluhanContext = useContext(KeluhanUserContext);
+  const keluhanContext = useContext(KeluhanKatimContext);
 
   const goBack = () => navigation.canGoBack() && navigation.goBack();
   const goToTerima = (data: Keluhan) => navigation.navigate('PilihTeknisi', { data });

@@ -8,6 +8,8 @@ import { Text } from 'native-base';
 import keluhanReducer from '@store/keluhan';
 import { KeluhanTeknisiContextProvider } from '@context/keluhan/KeluhanTeknisiContext';
 import Keluhan from '@store/models/Keluhan';
+import RiwayatPemeliharaan from './RiwayatPemeliharaan';
+import Pemeliharaan from '@store/models/Pemeliharaan';
 
 const UserNavigation = createNativeStackNavigator();
 
@@ -19,6 +21,9 @@ const screenOptions: Record<string, NativeStackNavigationOptions> = {
     headerShown: false
   },
   DetailKeluhan: {
+    headerShown: false
+  },
+  RiwayatPemeliharaan: {
     headerShown: false
   },
   FormPemeliharaan: {
@@ -34,6 +39,7 @@ type ParamList = {
   DataTugas: undefined;
   Report: undefined;
   DetailKeluhan: { data: Keluhan };
+  RiwayatPemeliharaan: undefined;
   FormPemeliharaan: undefined;
 };
 
@@ -49,6 +55,10 @@ const TeknisiScreen: FC = () => {
           name='DataTugas'
           component={DataTugas}
           options={screenOptions.DataTugas} />
+        <UserNavigation.Screen
+          name='RiwayatPemeliharaan'
+          component={RiwayatPemeliharaan}
+          options={screenOptions.RiwayatPemeliharaan} />
         <UserNavigation.Screen
           name='Report'
           component={Report}

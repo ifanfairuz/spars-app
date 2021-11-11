@@ -21,6 +21,7 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
   const goToTerima = (data: Keluhan) => navigation.navigate('PilihTeknisi', { data });
   const goToTambahJadwal = () => navigation.navigate('TambahPenjadwalan');
   const goToReportKeluhan = () => navigation.navigate('DetailReportKeluhan');
+  const goToReportPemeliharaan = () => navigation.navigate('DetailReportPemeliharaan');
   const goDetailKeluhan = (data: Keluhan) => navigation.navigate('DetailKeluhan', { data });
 
   const [prepareKeluhanDecline, setPrepareKeluhanDecline] = useState<Keluhan|undefined>(undefined);
@@ -100,7 +101,7 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
               accessibilityLabel='Filter Tanggal'
               outlineStyle='none'
               variant='unstyled'
-              maxW='150'
+              maxW='200'
               flex='1'
               py='1' px='3'
               borderWidth='0'
@@ -109,8 +110,8 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
               selectedValue={date_filter}
               onValueChange={t => filterDashboard(t)}
               dropdownIcon={<ChevronDownIcon size='6' color='white' mr='1' />}>
-              { [0,1,2,3,4,5].map(i => {
-                const date = moment().subtract(i, 'months');
+              { [0,1,2,3,4,5,6,7,8,9,10].map(i => {
+                const date = moment().add(5, 'months').subtract(i, 'months');
                 return <Select.Item label={date.format('MMMM YYYY')} value={date.format('MMYYYY')} />;
               }) }
             </Select>
@@ -170,7 +171,7 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
             </HStack>
             <HStack borderWidth='1' borderColor='spars.lightergrey' pl='4' pr='2' py='2' justifyContent='space-between' alignItems='center' my='2'>
               <Text>Terjadwal 20 Pemeliharaan</Text>
-              <Pressable onPress={goToReportKeluhan}>
+              <Pressable onPress={goToReportPemeliharaan}>
                 <Box py='2' px='4' bg={gradient.blue} borderRadius='5'>
                   <Text bold color='white' fontSize='xs'>VIEW</Text>
                 </Box>

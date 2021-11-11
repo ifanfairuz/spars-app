@@ -9,6 +9,8 @@ import { KeluhanUserContextProvider } from '@context/keluhan/KeluhanUserContext'
 import keluhanReducer from '@store/keluhan';
 import Keluhan from '@store/models/Keluhan';
 import { BarCodeReadEvent } from 'react-native-camera';
+import RiwayatPemeliharaanUser from './RiwayatPemeliharaanUser';
+import DetailPemeliharaanUser from './DetailPemeliharaanUser';
 
 const UserNavigation = createNativeStackNavigator();
 
@@ -28,11 +30,23 @@ const screenOptions: Record<string, NativeStackNavigationOptions> = {
   },
   TakeBarcode: {
     headerShown: false
-  }
+  },
+  RiwayatPemeliharaanUser: {
+    headerShown: false
+  },
+  DetailPemeliharaanUser: {
+    headerShadowVisible: false,
+    title: 'Detail Pemeliharaan',
+    headerTitle: ({ children }) => <Text fontSize='16' bold letterSpacing='0.5'>{children}</Text>,
+    headerTitleAlign: 'center',
+    headerLargeTitleShadowVisible: false,
+  },
 }
 
 type ParamList = {
   ListKeluhan: undefined;
+  RiwayatPemeliharaanUser: undefined;
+  DetailPemeliharaanUser: undefined;
   TambahKeluhan?: { code?: string };
   DetailKeluhan: { data: Keluhan };
   TakeBarcode?: { onRead?: (e: BarCodeReadEvent, navigation: NativeStackNavigationProp<ParamList, 'TakeBarcode'>) => void };
@@ -62,6 +76,14 @@ const UserScreen: FC = () => {
           name='TakeBarcode'
           component={TakeBarcode}
           options={screenOptions.TakeBarcode} />
+        <UserNavigation.Screen
+          name='RiwayatPemeliharaanUser'
+          component={RiwayatPemeliharaanUser}
+          options={screenOptions.RiwayatPemeliharaanUser} />
+        <UserNavigation.Screen
+          name='DetailPemeliharaanUser'
+          component={DetailPemeliharaanUser}
+          options={screenOptions.DetailPemeliharaanUser} />
       </UserNavigation.Navigator>
     </KeluhanUserContextProvider>
   );

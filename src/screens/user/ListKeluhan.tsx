@@ -1,11 +1,12 @@
 import React, { FC, useContext, useEffect } from 'react';
 import { VStack, Input, SearchIcon, Text, Box, FlatList, Pressable, HStack, CloseIcon } from 'native-base';
 import { ListRenderItem, RefreshControl } from 'react-native';
-import { GlassBg, KeluhanUser, ButtonScan } from '@components';
+import { GlassBg, KeluhanUser, ButtonScan, ReportCardTeknisiPreventif } from '@components';
 import { UserScreenProps } from '.';
 import KeluhanUserContext from '@context/keluhan/KeluhanUserContext';
 import Keluhan from '@store/models/Keluhan';
 import AuthContext from '@context/AuthContext';
+import Pemeliharaan from '@store/models/Pemeliharaan';
 
 export type ListKeluhanProps = UserScreenProps<'ListKeluhan'>;
 
@@ -15,6 +16,7 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
 
   const goToTambahKeluhan = (code?: string) => navigation.navigate('TambahKeluhan', { code });
   const goToDetailKeluhan = (data: Keluhan) => navigation.navigate('DetailKeluhan', { data });
+  const goToRiwayatPemeliharaan = () => navigation.navigate('RiwayatPemeliharaanUser');
   const goToTakeBarcode = () => navigation.navigate('TakeBarcode', {
     onRead: ({ data }, nav) => {
       nav.replace('TambahKeluhan', { code: data });
@@ -26,12 +28,24 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
     if (length <= 0) keluhanContext.getKeluhan();
   }, []);
 
-  const renderKeluhan: ListRenderItem<Keluhan> = ({ item, index }) => {
-    return (
-      <Box px='8' pb='3' bg='white'>
-        <KeluhanUser onPress={() => goToDetailKeluhan(item)} data={item} index={index} />
-      </Box>
-    );
+  const renderKeluhan: ListRenderItem<any> = ({ item, index }) => {
+    const isKeluhan = 'id_keluhan' in item;
+    if (isKeluhan) {
+      return (
+        <Box px='8' pb='3' bg='white'>
+          {(index == 1) && <Text bold fontSize='lg' my='5'>Keluhan</Text>}
+          <KeluhanUser onPress={() => goToDetailKeluhan(item)} data={item} index={index} />
+        </Box>
+      );
+    } else {
+      return (
+        <Box px='8' pb='3' bg='white'>
+          {(index == 0) && <Text bold fontSize='lg' mb='5'>Pemeliharaan</Text>}
+          <ReportCardTeknisiPreventif
+            onRiwayat={goToRiwayatPemeliharaan} />
+        </Box>
+      );
+    }
   }
 
   const renderHeader = () => (
@@ -67,8 +81,7 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
           <CloseIcon size='xs' color='white' />
         </Pressable>
       </HStack>
-      <Box px='5' py='5' bg='white' borderTopRadius='20'>
-        <Text bold fontSize='lg'>Keluhan</Text>
+      <Box px='5' pt='5' bg='white' borderTopRadius='20'>
       </Box>
     </VStack>
   )
@@ -81,7 +94,7 @@ const ListKeluhan: FC<ListKeluhanProps> = ({ navigation }) => {
             refreshing={keluhanContext.state.loading}
             onRefresh={keluhanContext.getKeluhan} />
         }
-        data={keluhanContext.state.datas}
+        data={[{ is_pemeliharaan: true }, ...keluhanContext.state.datas]}
         keyExtractor={k => k.id_keluhan}
         keyboardShouldPersistTaps='always'
         keyboardDismissMode='on-drag'

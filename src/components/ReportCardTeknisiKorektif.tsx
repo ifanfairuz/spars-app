@@ -1,4 +1,4 @@
-import Keluhan from '@store/models/Keluhan';
+import Pemeliharaan from '@store/models/Pemeliharaan';
 import { getColorHasilPenanganan } from '@support/helpers/functions';
 import { imageProfile } from '@support/helpers/image';
 import { ellipsis } from '@support/helpers/string';
@@ -8,7 +8,7 @@ import React, { FC } from 'react';
 import { Pressable } from 'react-native';
 
 export interface ReportCardTeknisiKorektifProps extends IVStackProps {
-  data: Keluhan
+  data: Pemeliharaan
   onPress?: () => void
 }
 

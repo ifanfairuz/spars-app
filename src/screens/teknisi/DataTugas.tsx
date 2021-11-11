@@ -7,6 +7,8 @@ import KeluhanTeknisiContext from '@context/keluhan/KeluhanTeknisiContext';
 import Keluhan from '@store/models/Keluhan';
 import AuthContext from '@context/AuthContext';
 import { getOrDash } from '@support/helpers/string';
+import moment from 'moment';
+import Pemeliharaan from '@store/models/Pemeliharaan';
 
 export type DataTugasProps = TeknisiScreenProps<'DataTugas'>;
 
@@ -15,6 +17,7 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
   const keluhanContext = useContext(KeluhanTeknisiContext);
   const [riwayatOpen, setRiwayatOpen] = useState<Keluhan|undefined>(undefined);
   const goToFormPemeliharaan = () => navigation.navigate('FormPemeliharaan');
+  const goToRiwayatPemeliharaan = () => navigation.navigate('RiwayatPemeliharaan');
   const goToReport = () => navigation.navigate('Report');
   const goToFormKeluhan = (data: Keluhan) => navigation.navigate('DetailKeluhan', { data });
 
@@ -32,8 +35,8 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
     if (datas.length <= 0) refresh();
   }, []);
 
-  const renderCard: ListRenderItem<Keluhan> = ({ item }) => {
-    const isPreventif = !item.id_keluhan;
+  const renderCard: ListRenderItem<any> = ({ item }) => {
+    const isPreventif = 'id_pemeliharaan' in item;
     return (
       <VStack
         px='6' pb='4' mb='4'
@@ -55,7 +58,7 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
           <ReportCardTeknisiPreventif
             mb='5'
             onPemeliharaan={goToFormPemeliharaan}
-            onRiwayat={() => setRiwayatOpen(item)} />
+            onRiwayat={goToRiwayatPemeliharaan} />
         ) : (
           <ReportCardTeknisiKorektif onPress={() => goToFormKeluhan(item)} data={item} />
         ) }
@@ -80,7 +83,7 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
             refreshing={loading_refresh}
             onRefresh={refresh} />
         }
-        data={datas}
+        data={[{ tgl_masuk: moment().format('DD MMMM YYYY') }, ...datas]}
         renderItem={renderCard}
         nestedScrollEnabled={true}
         contentContainerStyle={{

@@ -1,14 +1,12 @@
 import http from "@support/http"
 import axios, { Canceler } from "axios";
 import GetKeluhanRequest from "./GetKeluhanRequest"
-import GetAlatRequest, { GetAlatResponse } from "@actions/GetAlatRequest";
 import AddKeluhanRequest from "./AddKeluhanRequest";
 import GetTeknisiRequest, { GetTeknisiResponse } from "@actions/GetTeknisiRequest";
 import TanganiKeluhanRequest from "./TanganiKeluhanRequest";
 import ApproveKeluhanRequest from "./ApproveKeluhanRequest";
 
 let cancelTokenSearch: Canceler|undefined;
-let cancelTokenAlatSearch: Canceler|undefined;
 
 export async function getKeluhan(filter: string = '', cancelable: boolean = true, only_me: boolean = true) {
   if (cancelable && cancelTokenSearch) {
@@ -18,16 +16,6 @@ export async function getKeluhan(filter: string = '', cancelable: boolean = true
   const request = new GetKeluhanRequest(filter, only_me, cancelable ? new axios.CancelToken(c => cancelTokenSearch = c) : undefined);
   const response = await http.execute(request).catch(() => undefined);
   return response ? response.datas : [];
-}
-
-export async function getAlat(key?: string, page: number = 1, cancelable: boolean = false) {
-  if (cancelable && cancelTokenAlatSearch) {
-    cancelTokenAlatSearch();
-    cancelTokenAlatSearch = undefined;
-  }
-  const request = new GetAlatRequest(key, page, cancelable ? new axios.CancelToken(c => cancelTokenAlatSearch = c) : undefined);
-  const response = await http.execute(request).catch(() => new GetAlatResponse());
-  return response;
 }
 
 export async function getTeknisi() {
