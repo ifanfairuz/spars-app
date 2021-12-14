@@ -13,6 +13,7 @@ import ReportCardTeknisiPreventif from "./ReportCardTeknisiPreventif";
 
 import Input from "./Form/Input";
 import TakePhoto from "./Form/TakePhoto";
+import ChooseDocument from "./Form/ChooseDocument";
 
 import CalendarIcon from "./Icon/CalendarIcon";
 import FileIcon from "./Icon/FileIcon";
@@ -35,6 +36,7 @@ export {
 
   Input,
   TakePhoto,
+  ChooseDocument,
 
   CalendarIcon,
   FileIcon,

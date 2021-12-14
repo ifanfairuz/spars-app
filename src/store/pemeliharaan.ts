@@ -27,11 +27,11 @@ export const state: State = {
   search: ''
 }
 
-export type PemeliharaanAction =  Action<'SET_KELUHAN', typeof state.datas> |
-                          Action<'APPEND_KELUHAN', Pemeliharaan> |
-                          Action<'PREPEND_KELUHAN', Pemeliharaan> |
-                          Action<'EDIT_KELUHAN', { index: number, data: Pemeliharaan }> |
-                          Action<'REMOVE_KELUHAN', number> |
+export type PemeliharaanAction =  Action<'SET_PEMELIHARAAN', typeof state.datas> |
+                          Action<'APPEND_PEMELIHARAAN', Pemeliharaan> |
+                          Action<'PREPEND_PEMELIHARAAN', Pemeliharaan> |
+                          Action<'EDIT_PEMELIHARAAN', { index: number, data: Pemeliharaan }> |
+                          Action<'REMOVE_PEMELIHARAAN', number> |
                           Action<'SET_LOADING', boolean> |
                           Action<'SET_DASHBOARD', Dashboard> |
                           Action<'SET_SEARCH', string>
@@ -39,28 +39,28 @@ export type PemeliharaanAction =  Action<'SET_KELUHAN', typeof state.datas> |
 export const actions = (state: State, action: PemeliharaanAction) => {
   let datas = state.datas || [];
   switch (action.type) {
-    case 'SET_KELUHAN':
+    case 'SET_PEMELIHARAAN':
       return {
         ...state,
         datas: action.payload
       }
-    case 'APPEND_KELUHAN':
+    case 'APPEND_PEMELIHARAAN':
       return {
         ...state,
         datas: [...datas, action.payload]
       }
-    case 'PREPEND_KELUHAN':
+    case 'PREPEND_PEMELIHARAAN':
       return {
         ...state,
         datas: [action.payload, ...datas]
       }
-    case 'REMOVE_KELUHAN':
+    case 'REMOVE_PEMELIHARAAN':
       datas = datas.splice(action.payload, 1);
       return {
         ...state,
         datas: [...datas]
       }
-    case 'EDIT_KELUHAN':
+    case 'EDIT_PEMELIHARAAN':
       var { index, data } = action.payload;
       datas[index] = data;
       return {

@@ -1,14 +1,14 @@
-import React, { FC, useState } from 'react';
-import { VStack, ScrollView, Box, HStack, Input, TextArea, Text, Pressable, Image, Button, Radio } from 'native-base';
+import React, { FC, useContext, useMemo, useState } from 'react';
+import { VStack, ScrollView, Box, HStack, Input, TextArea, Text, Pressable, Image, Button, Radio, Toast } from 'native-base';
 import { TeknisiScreenProps } from '.';
-import { CollapseInfo, FileIcon } from '@components';
+import { ChooseDocument, CollapseInfo, FileIcon, Loader, TakePhoto } from '@components';
 import { IHStackProps } from 'native-base/lib/typescript/components/primitives/Stack/HStack';
-
-const SAMPLE = [
-  'https://media.istockphoto.com/photos/medical-vital-signs-monitor-in-a-hospital-picture-id901063844?k=20&m=901063844&s=612x612&w=0&h=ZHWhvQQbuh4AzmS5o--tXsGGqGLnHbei23V5J6o36e0=',
-  'https://www.marksanglobal.com/img/products/complex-medical0101.jpg',
-  'https://2.imimg.com/data2/YF/WB/MY-2527726/medical-divison-machines-250x250.jpg',
-];
+import moment from 'moment';
+import { getOrDash } from '@support/helpers/string';
+import { filePemeliharaan, download } from '@support/helpers/file';
+import { Asset } from 'react-native-image-picker';
+import { File } from '@support/http/contract/Params';
+import PemeliharaanTeknisiContext from '@context/pemeliharaan/PemeliharaanTeknisiContext';
 
 const InfoItem: FC<{ label: string, value: string } & IHStackProps> = ({ label, value, ...props }) => {
   return (
@@ -19,57 +19,112 @@ const InfoItem: FC<{ label: string, value: string } & IHStackProps> = ({ label, 
       borderBottomWidth='1'
       borderColor='#DEDEDE'
       borderStyle='dashed'
+      space='lg'
       {...props}>
       <Text color='spars.grey'>{label}</Text>
-      <Text bold>{value}</Text>
+      <Text bold flex='1' textAlign='right'>{value}</Text>
     </HStack>
   );
 }
-const InfoFile: FC = () => {
+const InfoFile: FC<{ name: string }> = ({ name }) => {
   return (
-    <HStack
+    <Pressable
+      flexDirection='row'
       py='2'
       justifyContent='space-between'
-      alignItems='center'>
-      <HStack
-        alignItems='center'
-        space='sm'>
-        <Image source={{ uri: SAMPLE[0] }} size='xs' borderRadius='4' />
-        <Text>file-pemeliharaan.pdf</Text>
-      </HStack>
-      <FileIcon size='sm' />
-    </HStack>
+      alignItems='center'
+      onPress={() => download(filePemeliharaan(name)) }>
+      <Box flex='1'>
+        <Text>{ name }</Text>
+      </Box>
+      <FileIcon ml='2' size='sm' />
+    </Pressable>
   );
 }
 
 export type FormPemeliharaanProps = TeknisiScreenProps<'FormPemeliharaan'>;
 
-const FormPemeliharaan: FC<FormPemeliharaanProps> = ({ navigation }) => {
-  const [pelaksana, SetPelaksana] = useState('teknisi')
+const FormPemeliharaan: FC<FormPemeliharaanProps> = ({ navigation, route }) => {
+  const pemeliharaanContext = useContext(PemeliharaanTeknisiContext);
+
+  const [loading, setLoading] = useState(false);
+  const [pelaksana, setPelaksana] = useState('teknisi');
+  const [catatan, setCatatan] = useState('');
+  const [pihak3, setPihak3] = useState('');
+  const [hasil, setHasil] = useState('');
+  const [images, setImages] = useState<Asset[]>([]);
+  const [dokuments, setDokuments] = useState<File[]>([]);
   const goToMain = () => navigation.replace('Report');
 
+  const data = useMemo(() => {
+    const { data } = route.params;
+    const foto = [
+      data.foto_1,
+      data.foto_2,
+      data.foto_3,
+    ].filter(i => (i[0] && i[0] !== ''));
+    return {
+      ...data,
+      foto
+    }
+  }, [route.params.data]);
+  const images_list = useMemo(() => images.map(i => i.uri || ''), [images]);
+
   const submit = () => {
-    goToMain();
+    if (!hasil || hasil == '') {
+      Toast.show({ title: 'Gagal Pemeliharaan', status: 'error' });
+      return false;
+    }
+    setLoading(true);
+    pemeliharaanContext.tanganiPemeliharaan({
+      id_pemeliharaan: data.id_pemeliharaan,
+      id_system: data.id_system,
+      id_teknisi: data.id_teknisi,
+      pihak_ketiga: pihak3,
+      catatan: catatan,
+      hasil_pemeliharaan: hasil,
+      foto_1: images.length > 0 ? images[0].base64 : undefined,
+      foto_2: images.length > 1 ? images[1].base64 : undefined,
+      foto_3: images.length > 2 ? images[2].base64 : undefined,
+      upload_berkas_1: dokuments.length > 0 ? images[0]: undefined,
+      upload_berkas_2: dokuments.length > 1 ? images[1]: undefined,
+      upload_berkas_3: dokuments.length > 2 ? images[2]: undefined,
+    })
+    .then(res => {
+      Toast.show({ title: 'Berhasil Pemeliharaan', status: 'success' });
+      goToMain();
+    })
+    .catch(() => {
+      Toast.show({ title: 'Gagal Pemeliharaan', status: 'error' });
+    })
+    .finally(() => {
+      setLoading(false);
+    });
   }
 
   return (
     <Box flex='1' bg='white'>
+      <Loader show={loading} />
       <ScrollView>
         <VStack p='5' space='md'>
 
           <CollapseInfo label='Info Dokumen' autoOpen={true} mb='5'>
-            <InfoItem label='Jenis Pemeliharaan' value='Jenis Pemeliharaan' />
-            <InfoItem label='Kategori Alat' value='Kategori Alat' />
-            <InfoItem label='Tgl Terjadwal' value='Tgl Terjadwal' />
-            <InfoItem label='Tgl Pelaksanaan' value='Tgl Pelaksanaan' borderBottomWidth='0' />
-            <InfoFile />
-            <InfoFile />
+            <InfoItem label='Jenis Pemeliharaan' value={getOrDash(data.tipe_pemeliharaan)} />
+            {!!data.kategori_alat && <InfoItem label='Kategori Alat' value={data.kategori_alat} />}
+            <InfoItem label='Tgl Terjadwal' value={moment(data.tgl_jadwal, 'YYYY-MM-DD').format('DD MMMM YYYY')} />
+            <InfoItem label='Tgl Pelaksanaan' value={
+              data.tgl_pelaksanaan && data.tgl_pelaksanaan != '0000-00-00' ?
+              moment(data.tgl_pelaksanaan, 'YYYY-MM-DD').format('DD MMMM YYYY') : '-'
+            } borderBottomWidth='0' />
+            {!!data.berkas_1 && <InfoFile name={data.berkas_1} />}
+            {!!data.berkas_2 && <InfoFile name={data.berkas_2} />}
+            {!!data.berkas_3 && <InfoFile name={data.berkas_3} />}
           </CollapseInfo>
           
           <CollapseInfo label='Detail Alat' autoOpen={true} mb='5'>
-            <InfoItem label='Nama Alat' value='Nama Alat' />
-            <InfoItem label='Nomor Seri' value='Nomor Seri' />
-            <InfoItem label='Ruangan' value='Ruangan' />
+            <InfoItem label='Nama Alat' value={getOrDash(data.nama_alat)} />
+            <InfoItem label='Nomor Seri' value={getOrDash(data.no_seri)} />
+            <InfoItem label='Ruangan' value={getOrDash(data.nama_ruangan)} />
           </CollapseInfo>
           
           <VStack space='sm'>
@@ -79,7 +134,7 @@ const FormPemeliharaan: FC<FormPemeliharaanProps> = ({ navigation }) => {
               name="pelaksana"
               accessibilityLabel="pelaksana"
               value={pelaksana}
-              onChange={v => SetPelaksana(v)}>
+              onChange={v => setPelaksana(v)}>
               <Radio flex='1' alignItems='flex-start' value="teknisi" _text={{ fontSize: 'sm' }}>
                 Teknisi
               </Radio>
@@ -94,48 +149,43 @@ const FormPemeliharaan: FC<FormPemeliharaanProps> = ({ navigation }) => {
                 maxW='50%'
                 size='md'
                 fontWeight='400'
-                bg='white' />
+                bg='white'
+                value={pihak3}
+                onChangeText={setPihak3} />
             ) }
           </VStack>
 
-          <TextArea h={40} placeholder='Catatan' textAlignVertical='top' />
+          <TextArea h={40} placeholder='Catatan' textAlignVertical='top' value={catatan} onChangeText={setCatatan} />
 
-          <Pressable
-            p='4'
-            bg='spars.lightgrey'
-            borderWidth='1'
-            borderColor='spars.darkgrey'
-            borderRadius='8'
-            borderStyle='dashed'
-            justifyContent='space-between'
-            flexDir='row'>
-            <Text fontSize='14' bold color='spars.grey'>Upload Foto (Maks 3x)</Text>
-            <Image size='2xs' source={require('@assets/images/icon_camera.png')} />
-          </Pressable>
+          <TakePhoto
+            values={images_list}
+            onAdd={datas => {
+              const data = datas.filter(d => d.uri && d.base64);
+              setImages([
+                ...images,
+                ...data
+              ]);
+            }}
+            onRemove={i => {
+              images.splice(i, 1);
+              setImages([...images]);
+            }} />
 
-          <HStack space='2xs' justifyContent='space-around' mb='5'>
-            { SAMPLE.map(uri => (
-              <Box position='relative' borderRadius='8' overflow='hidden' key={uri}>
-                <Image size='lg' source={{ uri }} alt='image' />
-                <Button
-                  size='5'
-                  borderRadius='4'
-                  alignItems='center'
-                  justifyContent='center'
-                  position='absolute' right='2' top='2'
-                  bg='rgba(0, 0, 0, 0.7)'>
-                  <Image size='3' source={require('@assets/images/icon_times.png')} />
-                </Button>
-              </Box>
-            )) }
-          </HStack>
+          <ChooseDocument
+            values={dokuments}
+            onAdd={(data) => setDokuments(data)}
+            onRemove={(index) => {
+              const docs = [...dokuments];
+              docs.splice(index, 1);
+              setDokuments(docs);
+            }} />
+          
 
           <VStack space='md' mb='5'>
             <Text bold>Hasil Pemeliharaan</Text>
-            <Radio.Group name='hasil_pemeliharaan' flexDirection='row' justifyContent='space-between'>
-              <Radio alignItems='flex-start' value='baik'>Baik</Radio>
-              <Radio alignItems='flex-start' value='kurang_baik'>Kurang Baik</Radio>
-              <Radio alignItems='flex-start' value='tidak_layak'>Tidak Layak</Radio>
+            <Radio.Group name='hasil_pemeliharaan' flexDirection='row' justifyContent='space-around' value={hasil} onChange={setHasil}>
+              <Radio alignItems='flex-start' value='Baik'>Baik</Radio>
+              <Radio alignItems='flex-start' value='Tidak Layak'>Tidak Layak</Radio>
             </Radio.Group>
           </VStack>
 

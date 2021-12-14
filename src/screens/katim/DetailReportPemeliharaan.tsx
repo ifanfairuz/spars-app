@@ -1,26 +1,23 @@
-import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
+import React, { FC, useContext, useMemo } from 'react';
 import { HStack, Text, VStack, Pressable, Box, FlatList, ArrowBackIcon } from 'native-base';
 import { GlassBg, ReportCardTeknisiPreventif } from '@components';
 import { ListRenderItem, RefreshControl } from 'react-native';
 import { KatimScreenProps } from '.';
-import Keluhan from '@store/models/Keluhan';
 import AuthContext from '@context/AuthContext';
 import Pemeliharaan from '@store/models/Pemeliharaan';
 import moment from 'moment';
+import PemeliharaanKatimContext from '@context/pemeliharaan/PemeliharaanKatimContext';
 
 export type DetailReportPemeliharaanProps = KatimScreenProps<'DetailReportPemeliharaan'>;
 
 const DetailReportPemeliharaan: FC<DetailReportPemeliharaanProps> = ({ navigation }) => {
+  const pemeliharaanContext = useContext(PemeliharaanKatimContext);
   const authContext = useContext(AuthContext);
   
   const goBack = () => navigation.goBack();
-  const goToRiwayatPemeliharaan = () => navigation.navigate('RiwayatPemeliharaanKatim');
+  const goToRiwayatPemeliharaan = (data: Pemeliharaan) => navigation.navigate('RiwayatPemeliharaanKatim', { data });
 
-  const loading_refresh = useMemo(() => false, []);
-  const refresh = () => {
-  }
-
-  const renderCard: ListRenderItem<Keluhan|Pemeliharaan> = ({ item }) => {
+  const renderCard: ListRenderItem<Pemeliharaan> = ({ item }) => {
     return (
       <VStack
         px='6' pb='2'
@@ -28,11 +25,12 @@ const DetailReportPemeliharaan: FC<DetailReportPemeliharaanProps> = ({ navigatio
         space='md'
         borderColor='spars.darkgrey'>
         <HStack justifyContent='space-between' alignItems='center'>
-          <Text bold fontSize='xs' color='spars.grey'>{ moment().format('DD MMMM YYYY').toUpperCase() }</Text>
+          <Text bold fontSize='xs' color='spars.grey'>{ moment(item.tgl_jadwal, 'YYYY-MM-DD').format('DD MMMM YYYY').toUpperCase() }</Text>
         </HStack>
         <ReportCardTeknisiPreventif
+          data={item}
           mb='5'
-          onRiwayat={goToRiwayatPemeliharaan} />
+          onRiwayat={() => goToRiwayatPemeliharaan(item)} />
       </VStack>
     )
   }
@@ -42,10 +40,10 @@ const DetailReportPemeliharaan: FC<DetailReportPemeliharaanProps> = ({ navigatio
       <FlatList
         refreshControl={
           <RefreshControl
-            refreshing={loading_refresh}
-            onRefresh={refresh} />
+            refreshing={pemeliharaanContext.state.loading}
+            onRefresh={() => {pemeliharaanContext.getPemeliharaan(moment())}} />
         }
-        data={[1,2,3,4,5]}
+        data={pemeliharaanContext.state.datas}
         renderItem={renderCard}
         nestedScrollEnabled={true}
         contentContainerStyle={{

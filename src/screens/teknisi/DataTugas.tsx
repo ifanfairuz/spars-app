@@ -1,35 +1,49 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
-import { HStack, Text, VStack, Pressable, ChevronRightIcon, Box, FlatList, Actionsheet, ScrollView, Select, ChevronDownIcon, Center, CloseIcon } from 'native-base';
-import { GlassBg, ReportCardTeknisiKorektif, ReportCardTeknisiPreventif } from '@components';
+import { HStack, Text, VStack, Pressable, ChevronRightIcon, Box, FlatList, Actionsheet, ScrollView, Select, ChevronDownIcon, Center, CloseIcon, Input } from 'native-base';
+import { CalendarIcon, GlassBg, ReportCardTeknisiKorektif, ReportCardTeknisiPreventif } from '@components';
 import { ListRenderItem, RefreshControl } from 'react-native';
+import DateTimePicker, { AndroidEvent } from '@react-native-community/datetimepicker';
 import { TeknisiScreenProps } from '.';
 import KeluhanTeknisiContext from '@context/keluhan/KeluhanTeknisiContext';
 import Keluhan from '@store/models/Keluhan';
 import AuthContext from '@context/AuthContext';
 import { getOrDash } from '@support/helpers/string';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import Pemeliharaan from '@store/models/Pemeliharaan';
+import PemeliharaanTeknisiContext from '@context/pemeliharaan/PemeliharaanTeknisiContext';
 
 export type DataTugasProps = TeknisiScreenProps<'DataTugas'>;
 
 const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
   const authContext = useContext(AuthContext);
   const keluhanContext = useContext(KeluhanTeknisiContext);
+  const pemeliharaanContext = useContext(PemeliharaanTeknisiContext);
+  const [date_filter, setDateFilter] = useState(moment());
+  const [show_datepicker_filter, setShowDatepickerFilter] = useState(false);
   const [riwayatOpen, setRiwayatOpen] = useState<Keluhan|undefined>(undefined);
-  const goToFormPemeliharaan = () => navigation.navigate('FormPemeliharaan');
-  const goToRiwayatPemeliharaan = () => navigation.navigate('RiwayatPemeliharaan');
+  const goToDetailPemeliharaan = (data: Pemeliharaan) => {
+    if (data.hasil_pemeliharaan && data.hasil_pemeliharaan != '') {
+      return navigation.navigate('DetailPemeliharaan', { data });
+    }
+    return navigation.navigate('FormPemeliharaan', { data });
+  }
+  const goToRiwayatPemeliharaan = (data: Pemeliharaan) => navigation.navigate('RiwayatPemeliharaan', { data });
   const goToReport = () => navigation.navigate('Report');
   const goToFormKeluhan = (data: Keluhan) => navigation.navigate('DetailKeluhan', { data });
 
-  const loading_refresh = useMemo(() => keluhanContext.state.loading, [keluhanContext.state.loading]);
+  const loading_refresh = useMemo(() => keluhanContext.state.loading || pemeliharaanContext.state.loading, [keluhanContext.state.loading, pemeliharaanContext.state.loading]);
+  const refresh_pemeliharaan = (date?: Moment) => {
+    pemeliharaanContext.init(date || date_filter);
+  }
   const refresh = () => {
     keluhanContext.init();
+    refresh_pemeliharaan();
   }
 
+
   const datas = useMemo(() => {
-    const d = [...keluhanContext.state.datas];
-    return d;
-  }, [keluhanContext.state.datas]);
+    return [...pemeliharaanContext.state.datas, ...keluhanContext.state.datas];
+  }, [keluhanContext.state.datas, pemeliharaanContext.state.datas]);
 
   useEffect(() => {
     if (datas.length <= 0) refresh();
@@ -45,7 +59,11 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
         borderBottomWidth={isPreventif ? '0' : '1'}
         borderColor='spars.darkgrey'>
         <HStack justifyContent='space-between' alignItems='center'>
-          <Text bold fontSize='xs' color='spars.grey'>{ item.tgl_masuk?.toUpperCase() }</Text>
+          <Text bold fontSize='xs' color='spars.grey'>{
+            isPreventif ? 
+            moment(item.tgl_jadwal, 'YYYY-MM-DD').format('DD MMMM YYYY').toUpperCase() :
+            item.tgl_masuk?.toUpperCase()
+          }</Text>
           <Center
             bg={isPreventif ? 'spars.blue' : 'spars.green'}
             p='1' px='4'
@@ -57,8 +75,9 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
         { isPreventif ? (
           <ReportCardTeknisiPreventif
             mb='5'
-            onPemeliharaan={goToFormPemeliharaan}
-            onRiwayat={goToRiwayatPemeliharaan} />
+            onPemeliharaan={() => goToDetailPemeliharaan(item)}
+            onRiwayat={() => goToRiwayatPemeliharaan(item)}
+            data={item} />
         ) : (
           <ReportCardTeknisiKorektif onPress={() => goToFormKeluhan(item)} data={item} />
         ) }
@@ -83,7 +102,7 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
             refreshing={loading_refresh}
             onRefresh={refresh} />
         }
-        data={[{ tgl_masuk: moment().format('DD MMMM YYYY') }, ...datas]}
+        data={datas}
         renderItem={renderCard}
         nestedScrollEnabled={true}
         contentContainerStyle={{
@@ -101,24 +120,37 @@ const DataTugas: FC<DataTugasProps> = ({ navigation }) => {
                 <Text bold color='white' fontSize='16'>Data Tugas</Text>
               </Pressable>
               <HStack flex='1' space='xs'>
-                <Select
-                  ml='auto'
+              <Pressable
+                flex='1'
+                maxW='200'
+                bg='spars.whitelight'
+                pr='3'
+                borderRadius='8'
+                onPress={() => setShowDatepickerFilter(true)}>
+                <Input
+                  value={date_filter.format('DD/MM/YYYY')}
                   placeholder='Filter Tanggal'
-                  placeholderTextColor='white'
-                  accessibilityLabel='Filter Tanggal'
-                  outlineStyle='none'
                   variant='unstyled'
-                  maxW='150'
-                  flex='1'
                   py='1' px='3'
-                  borderWidth='0'
-                  bg='spars.whitelight'
+                  outlineStyle='none'
                   color='white'
-                  dropdownIcon={<ChevronDownIcon size='6' color='white' mr='1' />}>
-                  <Select.Item value='08 January' label='08 January' />
-                  <Select.Item value='09 January' label='09 January' />
-                  <Select.Item value='10 January' label='10 January' />
-                </Select>
+                  InputRightElement={<CalendarIcon color='white' size='sm' />}
+                  isReadOnly />
+              </Pressable>
+              { show_datepicker_filter && (
+                <DateTimePicker
+                  testID="datePickerStrat"
+                  mode='date'
+                  is24Hour={true}
+                  display="default"
+                  value={date_filter.toDate() || new Date()}
+                  onChange={(e: AndroidEvent, date?: Date) => {
+                    const d = moment(date);
+                    setShowDatepickerFilter(false);
+                    setDateFilter(d);
+                    refresh_pemeliharaan(d);
+                  }} />
+              ) }
                 <Pressable
                   px='3'
                   justifyContent='center'

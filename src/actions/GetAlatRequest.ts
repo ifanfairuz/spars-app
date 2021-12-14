@@ -19,6 +19,14 @@ export class GetAlatResponse extends BaseResponse {
   data: Array<Alat> = [];
   page: number = 1;
   current: number = 1;
+
+  toDataOptionsAlat<T extends any>(maping = (a: Alat) => a as T) {
+    return {
+      page: this.page,
+      current: this.current,
+      data: this.data.map(maping),
+    }
+  }
 }
 
 export default class GetAlatRequest extends BaseRequest<GetAlatResponse, GetAlatParams> {

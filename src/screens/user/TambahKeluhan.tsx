@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
-import { VStack, ScrollView, Select, Box, HStack, Input, TextArea, Text, Button, ChevronDownIcon, CircleIcon } from 'native-base';
+import { VStack, ScrollView, Select, Box, HStack, Input, TextArea, Button, ChevronDownIcon, CircleIcon } from 'native-base';
 import { ButtonScan, Loader, TakePhoto } from '@components';
 import { UserScreenProps } from '.';
 import KeluhanUserContext from '@context/keluhan/KeluhanUserContext';

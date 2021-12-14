@@ -3,30 +3,35 @@ import { HStack, Text, VStack, Pressable, ArrowBackIcon, Box, FlatList } from 'n
 import { GlassBg, ReportCardTeknisiPreventif } from '@components';
 import { ListRenderItem, RefreshControl } from 'react-native';
 import { TeknisiScreenProps } from '.';
-import Keluhan from '@store/models/Keluhan';
 import AuthContext from '@context/AuthContext';
 import Pemeliharaan from '@store/models/Pemeliharaan';
 
 export type RiwayatPemeliharaanProps = TeknisiScreenProps<'RiwayatPemeliharaan'>;
 
-const RiwayatPemeliharaan: FC<RiwayatPemeliharaanProps> = ({ navigation }) => {
+const RiwayatPemeliharaan: FC<RiwayatPemeliharaanProps> = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
+  const { data } = route.params
   
-  const goToFormPemeliharaan = () => navigation.navigate('FormPemeliharaan');
+  const goToDetailPemeliharaan = (data: Pemeliharaan) => {
+    if (data.hasil_pemeliharaan && data.hasil_pemeliharaan != '') {
+      return navigation.navigate('DetailPemeliharaan', { data });
+    }
+    return navigation.navigate('FormPemeliharaan', { data });
+  }
   const goBack = () => navigation.goBack()
 
   const loading_refresh = useMemo(() => false, []);
   const refresh = () => {
   }
 
-  const renderCard: ListRenderItem<Keluhan|Pemeliharaan> = ({ item }) => {
+  const renderCard: ListRenderItem<Pemeliharaan> = ({ item }) => {
     return (
       <Pressable
-        onPress={goToFormPemeliharaan}
+        onPress={() => goToDetailPemeliharaan(item)}
         px='6' pb='1'
         bg='white'
         borderColor='spars.darkgrey'>
-        <ReportCardTeknisiPreventif mb='5' isDetail />
+        <ReportCardTeknisiPreventif mb='5' isDetail data={item} />
       </Pressable>
     )
   }
@@ -39,7 +44,7 @@ const RiwayatPemeliharaan: FC<RiwayatPemeliharaanProps> = ({ navigation }) => {
             refreshing={loading_refresh}
             onRefresh={refresh} />
         }
-        data={[1,2,3]}
+        data={[data]}
         renderItem={renderCard}
         nestedScrollEnabled={true}
         contentContainerStyle={{

@@ -3,30 +3,32 @@ import { HStack, Text, VStack, Pressable, ArrowBackIcon, Box, FlatList, Select, 
 import { GlassBg, ReportCardTeknisiPreventif } from '@components';
 import { ListRenderItem, RefreshControl } from 'react-native';
 import { KatimScreenProps } from '.';
-import Keluhan from '@store/models/Keluhan';
 import AuthContext from '@context/AuthContext';
 import Pemeliharaan from '@store/models/Pemeliharaan';
+import PemeliharaanKatimContext from '@context/pemeliharaan/PemeliharaanKatimContext';
 
 export type RiwayatPemeliharaanKatimProps = KatimScreenProps<'RiwayatPemeliharaanKatim'>;
 
-const RiwayatPemeliharaanKatim: FC<RiwayatPemeliharaanKatimProps> = ({ navigation }) => {
+const RiwayatPemeliharaanKatim: FC<RiwayatPemeliharaanKatimProps> = ({ navigation, route }) => {
   const authContext = useContext(AuthContext);
+  const pemeliharaanContext = useContext(PemeliharaanKatimContext);
+  const { data } = route.params
   
-  const goToDetailPemeliharaan = () => navigation.navigate('DetailPemeliharaan');
+  const goToDetailPemeliharaan = (data: Pemeliharaan) => navigation.navigate('DetailPemeliharaan', { data });
   const goBack = () => navigation.goBack()
 
   const loading_refresh = useMemo(() => false, []);
   const refresh = () => {
   }
 
-  const renderCard: ListRenderItem<Keluhan|Pemeliharaan> = ({ item }) => {
+  const renderCard: ListRenderItem<Pemeliharaan> = ({ item }) => {
     return (
       <Pressable
-        onPress={goToDetailPemeliharaan}
+        onPress={() => goToDetailPemeliharaan(item)}
         px='6' pb='1'
         bg='white'
         borderColor='spars.darkgrey'>
-        <ReportCardTeknisiPreventif mb='5' isDetail />
+        <ReportCardTeknisiPreventif mb='5' isDetail data={item} />
       </Pressable>
     )
   }
@@ -39,7 +41,7 @@ const RiwayatPemeliharaanKatim: FC<RiwayatPemeliharaanKatimProps> = ({ navigatio
             refreshing={loading_refresh}
             onRefresh={refresh} />
         }
-        data={[1,2,3]}
+        data={[data]}
         renderItem={renderCard}
         nestedScrollEnabled={true}
         contentContainerStyle={{

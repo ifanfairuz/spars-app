@@ -1,44 +1,41 @@
 import React, { createContext, FC, useMemo } from "react";
-import { KeluhanAction, State, state } from '@store/keluhan';
+import { PemeliharaanAction, State, state } from '@store/pemeliharaan';
 import { ContextProviderProps } from "@context/_type";
-import { getKeluhan, tanganiKeluhan } from "@actions/keluhan";
+import { getPemeliharaan, tanganiPemeliharaan } from "@actions/pemeliharaan";
+import { Moment } from "moment";
+import Pemeliharaan from "@store/models/Pemeliharaan";
 
-const KeluhanTeknisiContext = createContext({
+const PemeliharaanTeknisiContext = createContext({
   state,
-  init: async () => {},
-  getKeluhan,
-  tanganiKeluhan,
+  init: async (date: Moment) => {},
+  getPemeliharaan: async (date: Moment) => [] as Pemeliharaan[],
+  tanganiPemeliharaan
 });
 
-export const KeluhanTeknisiContextProvider: FC<ContextProviderProps<State, KeluhanAction>> = ({ dispatch, state, children }) => {
+export const PemeliharaanTeknisiContextProvider: FC<ContextProviderProps<State, PemeliharaanAction>> = ({ dispatch, state, children }) => {
   const context = useMemo(() => ({
     state,
-    init: async () => {
+    init: async (date: Moment) => {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const datas = await getKeluhan('', false, false);
-      dispatch({ type: 'SET_KELUHAN', payload: datas});
+      const datas = await getPemeliharaan(date.format('YYYY-MM-DD'));
+      dispatch({ type: 'SET_PEMELIHARAAN', payload: datas || [] });
       dispatch({ type: 'SET_LOADING', payload: false });
     },
-    getKeluhan: async () => {
+    getPemeliharaan: async (date: Moment) => {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const datas = await getKeluhan('', false, false);
-      dispatch({ type: 'SET_KELUHAN', payload: datas});
-      dispatch({ type: 'SET_LOADING', payload: false });
-      return datas;
-    },
-    tanganiKeluhan: async (id_keluhan: string, hasil_penanganan: string, catatan_teknisi: string = '', photos: string[] = []) => {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      const datas = await tanganiKeluhan(id_keluhan, hasil_penanganan, catatan_teknisi, photos);
+      const datas = await getPemeliharaan(date.format('YYYY-MM-DD'));
+      dispatch({ type: 'SET_PEMELIHARAAN', payload: datas || [] });
       dispatch({ type: 'SET_LOADING', payload: false });
       return datas;
     },
+    tanganiPemeliharaan
   }), [state]);
 
   return (
-    <KeluhanTeknisiContext.Provider value={context}>
+    <PemeliharaanTeknisiContext.Provider value={context}>
       { children }
-    </KeluhanTeknisiContext.Provider>
+    </PemeliharaanTeknisiContext.Provider>
   );
 }
 
-export default KeluhanTeknisiContext;
+export default PemeliharaanTeknisiContext;

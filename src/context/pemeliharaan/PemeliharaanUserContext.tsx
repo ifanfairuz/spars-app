@@ -1,51 +1,39 @@
 import React, { createContext, FC, useMemo } from "react";
-import { KeluhanAction, State, state } from '@store/keluhan';
+import { PemeliharaanAction, State, state } from '@store/pemeliharaan';
 import { ContextProviderProps } from "@context/_type";
-import { getKeluhan, tambahKeluhan } from "@actions/keluhan";
-import { getAlat } from "@actions/alat";
+import { getPemeliharaan } from "@actions/pemeliharaan";
+import { Moment } from "moment";
+import Pemeliharaan from "@store/models/Pemeliharaan";
 
-const KeluhanUserContext = createContext({
+const PemeliharaanUserContext = createContext({
   state,
-  getKeluhan,
-  tambahKeluhan,
-  getAlat,
-  search: (search: string) => {},
-  setLoading: (loading: boolean) => {},
+  init: async (date: Moment) => {},
+  getPemeliharaan: async (date: Moment) => [] as Pemeliharaan[]
 });
 
-export const KeluhanUserContextProvider: FC<ContextProviderProps<State, KeluhanAction>> = ({ dispatch, state, children }) => {
+export const PemeliharaanUserContextProvider: FC<ContextProviderProps<State, PemeliharaanAction>> = ({ dispatch, state, children }) => {
   const context = useMemo(() => ({
     state,
-    getKeluhan: async () => {
+    init: async (date: Moment) => {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const datas = await getKeluhan(state.search);
-      dispatch({ type: 'SET_KELUHAN', payload: datas});
+      const datas = await getPemeliharaan(date.format('YYYY-MM-DD'));
+      dispatch({ type: 'SET_PEMELIHARAAN', payload: datas || [] });
+      dispatch({ type: 'SET_LOADING', payload: false });
+    },
+    getPemeliharaan: async (date: Moment) => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const datas = await getPemeliharaan(date.format('YYYY-MM-DD'));
+      dispatch({ type: 'SET_PEMELIHARAAN', payload: datas || [] });
       dispatch({ type: 'SET_LOADING', payload: false });
       return datas;
-    },
-    tambahKeluhan: async (id_alat: string, no_seri: string, insiden?: string, deskripsi_keluhan?: string, photos: string[] = []) => {
-      return await tambahKeluhan(id_alat, no_seri, insiden, deskripsi_keluhan, photos);
-    },
-    getAlat: async (key: string = '', page: number = 1, cancelable: boolean = false) => {
-      return await getAlat(key, page, cancelable);
-    },
-    search: async (search: string) => {
-      dispatch({ type: 'SET_SEARCH', payload: search });
-      dispatch({ type: 'SET_LOADING', payload: true });
-      const datas = await getKeluhan(search);
-      dispatch({ type: 'SET_KELUHAN', payload: datas});
-      dispatch({ type: 'SET_LOADING', payload: false });
-    },
-    setLoading: (loading: boolean) => {
-      dispatch({ type: 'SET_LOADING', payload: loading });
     }
   }), [state]);
 
   return (
-    <KeluhanUserContext.Provider value={context}>
+    <PemeliharaanUserContext.Provider value={context}>
       { children }
-    </KeluhanUserContext.Provider>
+    </PemeliharaanUserContext.Provider>
   );
 }
 
-export default KeluhanUserContext;
+export default PemeliharaanUserContext;

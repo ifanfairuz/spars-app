@@ -1,6 +1,6 @@
 import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
-import { Box, HStack, Image, ScrollView, Select, Text, VStack, ChevronDownIcon, Stack, Pressable, ArrowForwardIcon, FlatList, Modal, Button, TextArea, CloseIcon } from 'native-base';
-import { GlassBg, KeluhanKatim } from '@components';
+import { Box, HStack, Image, ScrollView, Input, Text, VStack, Stack, Pressable, ArrowForwardIcon, FlatList, Modal, Button, TextArea, CloseIcon } from 'native-base';
+import { CalendarIcon, GlassBg, KeluhanKatim } from '@components';
 import { Dimensions, ListRenderItem, RefreshControl } from 'react-native';
 import { gradient } from '@config/native-base';
 import { KatimScreenProps } from '.';
@@ -8,16 +8,20 @@ import AuthContext from '@context/AuthContext';
 import { imageProfile } from '@support/helpers/image';
 import KeluhanKatimContext from '@context/keluhan/KeluhanKatimContext';
 import Keluhan from '@store/models/Keluhan';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { validatePersentase } from '@support/helpers/string';
+import PemeliharaanKatimContext from '@context/pemeliharaan/PemeliharaanKatimContext';
+import DateTimePicker, { AndroidEvent } from '@react-native-community/datetimepicker';
 
 export type HomePageProps = KatimScreenProps<'HomePage'>;
 
 const HomePage: FC<HomePageProps> = ({ navigation }) => {
   const authContext = useContext(AuthContext);
   const keluhanContext = useContext(KeluhanKatimContext);
+  const pemeliharaanContext = useContext(PemeliharaanKatimContext);
   const [head_height, setHeadHeight] = useState(0);
-  const [date_filter, setDateFilter] = useState(moment().format('MMYYYY'));
+  const [date_filter, setDateFilter] = useState(moment());
+  const [show_datepicker_filter, setShowDatepickerFilter] = useState(false);
   const goToTerima = (data: Keluhan) => navigation.navigate('PilihTeknisi', { data });
   const goToTambahJadwal = () => navigation.navigate('TambahPenjadwalan');
   const goToReportKeluhan = () => navigation.navigate('DetailReportKeluhan');
@@ -32,19 +36,21 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
     setPrepareKeluhanDecline(undefined);
   }
 
-  const loading_refresh = useMemo(() => keluhanContext.state.loading, [keluhanContext.state.loading]);
+  const loading_refresh = useMemo(() => keluhanContext.state.loading || pemeliharaanContext.state.loading, [keluhanContext.state.loading, pemeliharaanContext.state.loading]);
   const refresh = () => {
-    keluhanContext.init(date_filter);
+    keluhanContext.init(date_filter.format('MMYYYY'));
+    pemeliharaanContext.getPemeliharaan(date_filter);
   }
 
-  const filterDashboard = (date: string) => {
-    setDateFilter(date);
-    keluhanContext.getDashboard(date);
+  const filterDashboard = (date: Moment) => {
+    keluhanContext.getDashboard(date.format('MMYYYY'));
+    pemeliharaanContext.getPemeliharaan(date);
   }
   
   const user = useMemo(() => authContext.state.user, [authContext]);
   const dashboard = useMemo(() => keluhanContext.state.dashboard, [keluhanContext.state.dashboard]);
   const keluhanBaru = useMemo(() => keluhanContext.state.datas /*.slice(0, 5)*/, [keluhanContext.state.datas]);
+  const pemeliharaan_count = useMemo(() => pemeliharaanContext.state.datas/*.map(d => d.id_pemeliharaan).filter((d, i, a) => a.indexOf(d) == i)*/ .length, [pemeliharaanContext.state.datas]);
 
   useEffect(() => {
     if (keluhanContext.state.datas.length <= 0) refresh();
@@ -95,26 +101,37 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
           </HStack>
           <HStack justifyContent='space-between' alignItems='center'>
             <Text bold color='white'>OVERVIEW</Text>
-            <Select
-              placeholder='Filter Tanggal'
-              placeholderTextColor='white'
-              accessibilityLabel='Filter Tanggal'
-              outlineStyle='none'
-              variant='unstyled'
-              maxW='200'
+            <Pressable
               flex='1'
-              py='1' px='3'
-              borderWidth='0'
+              maxW='200'
               bg='spars.whitelight'
-              color='white'
-              selectedValue={date_filter}
-              onValueChange={t => filterDashboard(t)}
-              dropdownIcon={<ChevronDownIcon size='6' color='white' mr='1' />}>
-              { [0,1,2,3,4,5,6,7,8,9,10].map(i => {
-                const date = moment().add(5, 'months').subtract(i, 'months');
-                return <Select.Item label={date.format('MMMM YYYY')} value={date.format('MMYYYY')} />;
-              }) }
-            </Select>
+              pr='3'
+              borderRadius='8'
+              onPress={() => setShowDatepickerFilter(true)}>
+              <Input
+                value={date_filter.format('DD/MM/YYYY')}
+                placeholder='Filter Tanggal'
+                variant='unstyled'
+                py='1' px='3'
+                outlineStyle='none'
+                color='white'
+                InputRightElement={<CalendarIcon color='white' size='sm' />}
+                isReadOnly />
+            </Pressable>
+            { show_datepicker_filter && (
+              <DateTimePicker
+                testID="datePickerStrat"
+                mode='date'
+                is24Hour={true}
+                display="default"
+                value={date_filter.toDate() || new Date()}
+                onChange={(e: AndroidEvent, date?: Date) => {
+                  const d = moment(date);
+                  setShowDatepickerFilter(false);
+                  setDateFilter(d);
+                  filterDashboard(d);
+                }} />
+            ) }
           </HStack>
           <VStack py='5' bg='white' borderRadius='8'>
             
@@ -170,7 +187,7 @@ const HomePage: FC<HomePageProps> = ({ navigation }) => {
               </Pressable>
             </HStack>
             <HStack borderWidth='1' borderColor='spars.lightergrey' pl='4' pr='2' py='2' justifyContent='space-between' alignItems='center' my='2'>
-              <Text>Terjadwal 20 Pemeliharaan</Text>
+              <Text>Terjadwal { pemeliharaan_count || '0' } Pemeliharaan</Text>
               <Pressable onPress={goToReportPemeliharaan}>
                 <Box py='2' px='4' bg={gradient.blue} borderRadius='5'>
                   <Text bold color='white' fontSize='xs'>VIEW</Text>

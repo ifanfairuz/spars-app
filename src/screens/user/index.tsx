@@ -11,6 +11,9 @@ import Keluhan from '@store/models/Keluhan';
 import { BarCodeReadEvent } from 'react-native-camera';
 import RiwayatPemeliharaanUser from './RiwayatPemeliharaanUser';
 import DetailPemeliharaanUser from './DetailPemeliharaanUser';
+import pemeliharaanReducer from '@store/pemeliharaan';
+import Pemeliharaan from '@store/models/Pemeliharaan';
+import { PemeliharaanUserContextProvider } from '@context/pemeliharaan/PemeliharaanUserContext';
 
 const UserNavigation = createNativeStackNavigator();
 
@@ -45,8 +48,8 @@ const screenOptions: Record<string, NativeStackNavigationOptions> = {
 
 type ParamList = {
   ListKeluhan: undefined;
-  RiwayatPemeliharaanUser: undefined;
-  DetailPemeliharaanUser: undefined;
+  RiwayatPemeliharaanUser: { data: Pemeliharaan };
+  DetailPemeliharaanUser: { data: Pemeliharaan };
   TambahKeluhan?: { code?: string };
   DetailKeluhan: { data: Keluhan };
   TakeBarcode?: { onRead?: (e: BarCodeReadEvent, navigation: NativeStackNavigationProp<ParamList, 'TakeBarcode'>) => void };
@@ -55,10 +58,12 @@ type ParamList = {
 export type UserScreenProps<T extends keyof ParamList> = NativeStackScreenProps<ParamList, T>;
 
 const UserScreen: FC = () => {
-  const [state, dispatch] = useReducer(keluhanReducer.actions, keluhanReducer.state);
+  const [state_keluhan, dispatch_keluhan] = useReducer(keluhanReducer.actions, keluhanReducer.state);
+  const [state_pemeliharaan, dispatch_pemeliharaan] = useReducer(pemeliharaanReducer.actions, pemeliharaanReducer.state);
 
   return (
-    <KeluhanUserContextProvider state={state} dispatch={dispatch}>
+    <KeluhanUserContextProvider state={state_keluhan} dispatch={dispatch_keluhan}>
+    <PemeliharaanUserContextProvider state={state_pemeliharaan} dispatch={dispatch_pemeliharaan}>
       <UserNavigation.Navigator>
         <UserNavigation.Screen
           name='ListKeluhan'
@@ -85,6 +90,7 @@ const UserScreen: FC = () => {
           component={DetailPemeliharaanUser}
           options={screenOptions.DetailPemeliharaanUser} />
       </UserNavigation.Navigator>
+    </PemeliharaanUserContextProvider>
     </KeluhanUserContextProvider>
   );
 }

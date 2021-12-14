@@ -1,4 +1,4 @@
-import Pemeliharaan from '@store/models/Pemeliharaan';
+import Keluhan from '@store/models/Keluhan';
 import { getColorHasilPenanganan } from '@support/helpers/functions';
 import { imageProfile } from '@support/helpers/image';
 import { ellipsis } from '@support/helpers/string';
@@ -8,7 +8,7 @@ import React, { FC } from 'react';
 import { Pressable } from 'react-native';
 
 export interface ReportCardTeknisiKorektifProps extends IVStackProps {
-  data: Pemeliharaan
+  data: Keluhan
   onPress?: () => void
 }
 
@@ -23,10 +23,12 @@ const ReportCardTeknisiKorektif: FC<ReportCardTeknisiKorektifProps> = ({ onPress
             <Text color='spars.grey' bold>{ data.nama_ruangan }</Text>
           </VStack>
         </HStack>
-        <VStack>
-          <Text>Kerusakan</Text>
-          <Text color='spars.grey'>{ ellipsis(data.detail.deskripsi_keluhan, 30) }</Text>
-        </VStack>
+        { !!data.detail && !!data.detail.deskripsi_keluhan && (
+          <VStack>
+            <Text>Kerusakan</Text>
+            <Text color='spars.grey'>{ ellipsis(data.detail.deskripsi_keluhan, 30) }</Text>
+          </VStack>
+        )}
         { !!data.hasil_penanganan && (
           <VStack>
             <Text>Hasil Penanganan</Text>

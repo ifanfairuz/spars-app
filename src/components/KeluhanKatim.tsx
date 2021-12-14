@@ -80,7 +80,11 @@ const KeluhanKatim: FC<KeluhanKatimProps> = ({ data, onAccept, onDecline, goDeta
             </Box>
             <Box flex='1'>
               <Text fontSize='xs' color='spars.grey' letterSpacing='1'>Tgl Approval Katim</Text>
-              <Text fontSize='xs' letterSpacing='0.5' bold>01 Januari 2021</Text>
+              <Text fontSize='xs' letterSpacing='0.5' bold>{ data.tgl_approval_katim }</Text>
+            </Box>
+            <Box flex='1'>
+              <Text fontSize='xs' color='spars.grey' letterSpacing='1'>Tgl Penanganan</Text>
+              <Text fontSize='xs' letterSpacing='0.5' bold>{ data.tgl_penanganan_teknisi='' }</Text>
             </Box>
           </HStack>
         </Stack>

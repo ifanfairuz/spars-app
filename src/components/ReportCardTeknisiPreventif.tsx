@@ -1,40 +1,44 @@
+import Pemeliharaan from '@store/models/Pemeliharaan';
+import { getOrDash } from '@support/helpers/string';
+import moment from 'moment';
 import { Box, Button, Center, HStack, Text, VStack } from 'native-base';
 import { IVStackProps } from 'native-base/lib/typescript/components/primitives/Stack/VStack';
 import React, { FC } from 'react';
 
 export interface ReportCardTeknisiPreventifProps extends IVStackProps {
+  data: Pemeliharaan
   onPemeliharaan?: () => void
   onRiwayat?: () => void
   isDetail?: boolean
 }
 
-const ReportCardTeknisiPreventif: FC<ReportCardTeknisiPreventifProps> = ({ onPemeliharaan, onRiwayat, isDetail, ...props }) => {
+const ReportCardTeknisiPreventif: FC<ReportCardTeknisiPreventifProps> = ({ onPemeliharaan, onRiwayat, data, isDetail, ...props }) => {
   return (
     <VStack space='md' p='5' bg='white' shadow='5' borderRadius='8' {...props}>
-      <HStack alignItems='center' justifyContent='space-between'>
-        <VStack>
-          <Text fontSize='md' bold>Hematology Analyzer</Text>
-          <Text color='spars.green' fontSize='xs' bold>NS1231238</Text>
-          <Text color='spars.grey' fontWeight='light'>Merk Alat</Text>
-        </VStack>
-        <Text color='spars.grey' bold>Lab A12</Text>
-      </HStack>
+      <Text fontSize='md' bold>{ data.nama_alat }</Text>
+      <VStack>
+        <Text color='spars.green' fontSize='xs' bold>{ getOrDash(data.no_seri) }</Text>
+        <Text color='spars.grey' fontWeight='light'>{ getOrDash(data.merk) }</Text>
+        <Text color='spars.grey' bold>{ getOrDash(data.nama_ruangan) }</Text>
+      </VStack>
       <HStack>
         <Box flex='1'>
           <Text color='spars.grey' letterSpacing='0.5'>Tgl Terjadwal</Text>
-          <Text bold>01 Januari 2021</Text>
+          <Text bold>{ moment(data.tgl_jadwal, 'YYYY-MM-DD')?.format('DD MMMM YYYY') }</Text>
         </Box>
-        <Box flex='1'>
-          <Text color='spars.grey' letterSpacing='0.5'>Tgl Pemeliharaan</Text>
-          <Text bold>01 Januari 2021</Text>
-        </Box>
+        { !!data.tgl_pelaksanaan && data.tgl_pelaksanaan != '0000-00-00' && (
+          <Box flex='1'>
+            <Text color='spars.grey' letterSpacing='0.5'>Tgl Pemeliharaan</Text>
+            <Text bold>{ moment(data.tgl_pelaksanaan, 'YYYY-MM-DD')?.format('DD MMMM YYYY') }</Text>
+          </Box>
+        ) }
       </HStack>
       {isDetail && (
         <VStack space='md'>
-          <Box flex='1'>
+          {!!data.hasil_pemeliharaan && <Box flex='1'>
             <Text color='spars.grey' letterSpacing='0.5'>Hasil Pemeliharaan</Text>
-            <Text bold>Baik</Text>
-          </Box>
+            <Text bold>{ data.hasil_pemeliharaan }</Text>
+          </Box>}
           <Center
             p='4'
             borderWidth='1'

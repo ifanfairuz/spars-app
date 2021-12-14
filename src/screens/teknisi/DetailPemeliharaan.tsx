@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { VStack, ScrollView, Box, HStack, Text, Pressable, Image, Button, Center } from 'native-base';
-import { UserScreenProps } from '.';
+import { TeknisiScreenProps } from '.';
 import { CollapseInfo, FileIcon } from '@components';
 import { IHStackProps } from 'native-base/lib/typescript/components/primitives/Stack/HStack';
 import moment from 'moment';
@@ -40,9 +40,9 @@ const InfoFile: FC<{ name: string }> = ({ name }) => {
   );
 }
 
-export type DetailPemeliharaanUserProps = UserScreenProps<'DetailPemeliharaanUser'>;
+export type DetailPemeliharaanProps = TeknisiScreenProps<'DetailPemeliharaan'>;
 
-const DetailPemeliharaanUser: FC<DetailPemeliharaanUserProps> = ({ navigation, route }) => {
+const DetailPemeliharaan: FC<DetailPemeliharaanProps> = ({ navigation, route }) => {
   const data = useMemo(() => {
     const { data } = route.params;
     const foto = [
@@ -123,4 +123,4 @@ const DetailPemeliharaanUser: FC<DetailPemeliharaanUserProps> = ({ navigation, r
   );
 }
 
-export default DetailPemeliharaanUser;
+export default DetailPemeliharaan;

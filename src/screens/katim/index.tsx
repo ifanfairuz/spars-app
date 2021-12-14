@@ -13,11 +13,11 @@ import pemeliharaanReducer from '@store/pemeliharaan';
 import { KeluhanKatimContextProvider } from '@context/keluhan/KeluhanKatimContext';
 import { PemeliharaanKatimContextProvider } from '@context/pemeliharaan/PemeliharaanKatimContext';
 import Keluhan from '@store/models/Keluhan';
-import Pemeliharaan from '@store/models/Pemeliharaan';
 import { BarCodeReadEvent } from 'react-native-camera';
 import DetailPemeliharaan from './DetailPemeliharaan';
 import RiwayatPemeliharaanKatim from './RiwayatPemeliharaanKatim';
 import { Text } from 'native-base';
+import Pemeliharaan from '@store/models/Pemeliharaan';
 
 const KatimNavigation = createNativeStackNavigator();
 
@@ -68,8 +68,8 @@ type ParamList = {
   DetailReportPemeliharaan: undefined;
   PilihAlat: undefined;
   TambahPenjadwalan: undefined;
-  RiwayatPemeliharaanKatim: undefined;
-  DetailPemeliharaan: undefined;
+  RiwayatPemeliharaanKatim: { data: Pemeliharaan };
+  DetailPemeliharaan: { data: Pemeliharaan };
   DetailKeluhan: { data: Keluhan };
   TakeBarcode?: { onRead?: (e: BarCodeReadEvent, navigation: NativeStackNavigationProp<ParamList, 'TakeBarcode'>) => void };
 };
